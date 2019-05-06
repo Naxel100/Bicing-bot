@@ -2,7 +2,7 @@ from jutge import read
 
 # Escribe x veces hola
 def hola(x):
-    print("alex "*x)
+    print("caca "*x)
 
 def mierda(x):
     print(x,"mierdas!")
