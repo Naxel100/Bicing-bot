@@ -13,16 +13,24 @@ def Create_Graph(dist = 1):
     for st in bicing.itertuples():
         coord1 = (st.lat, st.lon)
         G.add_node(coord1)
+<<<<<<< HEAD
         dt = st
         while dt != None:
             coord2 = (dt.lat, dt.lon)
             #print(haversine(coord1, coord2))
             if coord1 != coord2 and haversine(coord1, coord2) <= dist: G.add_edge(coord1, coord2)
             dt = dt + 1
+=======
+        for dt in bicing.itertuples():
+            coord2 = (dt.lat, dt.lon)
+            if(coord1 != coord2 and haversine(coord1, coord2) <= dist):
+                G.add_edge(coord1, coord2)
+>>>>>>> 43385d952fbb65f647d30b45db5d0f1887faa4cc
     print(list(G.edges))
     return G
 
 
+<<<<<<< HEAD
 def main():
     G = Create_Graph()
     geolocator = Nominatim(user_agent="bicing_bot")
@@ -31,4 +39,14 @@ def main():
     coord1 = (location1.latitude, location1.longitude)
     coord2 = (location2.latitude, location2.longitude)
     print(haversine(coord1, coord2))
+=======
+
+
+def main():
+    G = Create_Graph(1)
+
+    #geolocator = Nominatim(user_agent="bicing_bot")
+    #location1 = geolocator.geocode('Jordi Girona, Barcelona')
+    #print(location1.latitude)
+>>>>>>> 43385d952fbb65f647d30b45db5d0f1887faa4cc
 main()
