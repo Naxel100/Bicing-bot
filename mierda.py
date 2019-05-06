@@ -1,16 +1,20 @@
+import pandas as pd
+import networkx as nx
+from geopy.geocoders import Nominatim
+from haversine import haversine
 from jutge import read
 
-# Escribe x veces hola
-def hola(x):
-    print("caca "*x)
-
-def mierda(x):
-    print(x,"mierdas!")
-
 def main():
-    x, y = read(int, int)
-    for i in range(y): x *= y
-    print(x)
-    hola(x)
-    mierda(x)
+    G = nx.DiGraph()
+    G.add_edge(1,3)
+    print(G.number_of_nodes())
+    print(list(G.nodes))
+
+
+    geolocator = Nominatim(user_agent="bicing_bot")
+    location1 = geolocator.geocode('Salvador Espriu, Mollet del Valles')
+    location2 = geolocator.geocode('Mar, Orihuela')
+    coord1 = (location1.latitude, location1.longitude)
+    coord2 = (location2.latitude, location2.longitude)
+    print(haversine(coord1, coord2))
 main()
