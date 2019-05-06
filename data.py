@@ -6,16 +6,19 @@ from jutge import read
 
 def Create_Graph(dist = 1):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index='station_id')
+    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
     G = nx.DiGraph()
+    n = bicing.size
     for st in bicing.itertuples():
         coord1 = (st.lat, st.lon)
         G.add_node(coord1)
-        for dt in bicing.itertuples():
+        dt = st
+        while dt != None:
             coord2 = (dt.lat, dt.lon)
             #print(haversine(coord1, coord2))
             if coord1 != coord2 and haversine(coord1, coord2) <= dist: G.add_edge(coord1, coord2)
+            dt = dt + 1
     print(list(G.edges))
     return G
 
