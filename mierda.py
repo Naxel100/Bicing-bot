@@ -26,8 +26,9 @@ def Paint_Graph(G):
     try:
         m_bcn = StaticMap(600, 600)
         for node in G.nodes:
-            print(node)
-            marker = CircleMarker((node[1], node[0]), 'red', 4)
+            print(node) #esto no vale pa na, era pa ver como daba los nodes
+            #ojo, aqui hay que poner primero longitud y luego latitud
+            marker = CircleMarker((node[1], node[0]) , 'red', 6 #esto es el tamaño del punto)
             m_bcn.add_marker(marker)
 
         image = m_bcn.render()
