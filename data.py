@@ -12,6 +12,9 @@ def main():
 
 
     geolocator = Nominatim(user_agent="bicing_bot")
-    location1 = geolocator.geocode('Jordi Girona, Barcelona')
-    print(location1.latitude)
+    location1 = geolocator.geocode('Salvador Espriu, Mollet del Valles')
+    location2 = geolocator.geocode('Mar, Orihuela')
+    coord1 = (location1.latitude, location1.longitude)
+    coord2 = (location2.latitude, location2.longitude)
+    print(haversine(coord1, coord2))
 main()
