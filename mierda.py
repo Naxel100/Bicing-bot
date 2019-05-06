@@ -1,6 +1,7 @@
 import pep8
 import pandas as pd
 import networkx as nx
+from staticmap import StaticMap, CircleMarker
 from geopy.geocoders import Nominatim
 from haversine import haversine
 from jutge import read
@@ -21,11 +22,25 @@ def Create_Graph(dist = 1000):
 
     return G
 
+def Paint_Graph(G):
+    try:
+        m_bcn = StaticMap(600, 600)
+        for node in G.nodes:
+            print(node)
+            marker = CircleMarker((node[1], node[0]), 'red', 4)
+            m_bcn.add_marker(marker)
+
+        image = m_bcn.render()
+        image.save('estaciones.png')
+    except:
+        print("This is not a graph!")
+
 def main():
     x=read(int)
     G = Create_Graph(x)
     print(G.number_of_nodes())
     print(list(G.edges))
+    Paint_Graph(G)
 
 
     #geolocator = Nominatim(user_agent="bicing_bot")
