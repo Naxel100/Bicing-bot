@@ -1,3 +1,4 @@
+import pep8
 import pandas as pd
 import networkx as nx
 from geopy.geocoders import Nominatim
@@ -6,8 +7,8 @@ from jutge import read
 
 def Create_Graph(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index='station_id')
-    dist/=1000
+    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
+    dist /= 1000
     G = nx.DiGraph()
     n = bicing.size
     for st in bicing.itertuples():
@@ -15,15 +16,16 @@ def Create_Graph(dist = 1000):
         G.add_node(coord1)
         for dt in bicing.itertuples():
             coord2 = (dt.lat, dt.lon)
-            if(haversine(coord1, coord2) <= dist):
+            if(st != dt and haversine(coord1, coord2) <= dist):
                 G.add_edge(coord1, coord2)
-    print(list(G.edges))
+
     return G
 
 def main():
-    G = Create_Graph()
+    x=read(int)
+    G = Create_Graph(x)
     print(G.number_of_nodes())
-    print(list(G.nodes))
+    print(list(G.edges))
 
 
     #geolocator = Nominatim(user_agent="bicing_bot")
