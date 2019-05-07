@@ -1,7 +1,7 @@
 import pep8
 import pandas as pd
 import networkx as nx
-from staticmap import StaticMap, CircleMarker
+import staticmap as stm
 from geopy.geocoders import Nominatim
 from haversine import haversine
 from jutge import read
@@ -13,27 +13,31 @@ def Create_Graph(dist = 1000):
     G = nx.DiGraph()
     n = bicing.size
     for st in bicing.itertuples():
-        coord1 = (st.lat, st.lon)
+        coord1 = (st.lon, st.lat)
         G.add_node(coord1)
         for dt in bicing.itertuples():
-            coord2 = (dt.lat, dt.lon)
+            coord2 = (dt.lon, dt.lat)
             if(st != dt and haversine(coord1, coord2) <= dist):
                 G.add_edge(coord1, coord2)
 
     return G
 
 def Paint_Graph(G):
-    try:
-        m_bcn = StaticMap(600, 600)
+    #try:
+        m_bcn = stm.StaticMap(600, 600)
         for node in G.nodes:
             print(node) #esto no vale pa na, era pa ver como daba los nodes
             #ojo, aqui hay que poner primero longitud y luego latitud
-            marker = CircleMarker((node[1], node[0]) , 'red', 6 )#esto es el tamaño del punto
+            marker = stm.CircleMarker((node[0], node[1]) , 'red', 6 )#esto es el tamaño del punto
             m_bcn.add_marker(marker)
+
+        for edge in G.edges:
+            linea = stm.Line((edge[0],edge[1]), 'blue', 1)
+            m_bcn.add_line(linea)
 
         image = m_bcn.render()
         image.save('estaciones.png')
-    except:
+    #except:
         print("This is not a graph!")
 
 def main():
