@@ -23,12 +23,10 @@ def Create_Graph(dist = 1000):
     return G
 
 def Paint_Graph(G):
-    #try:
-        m_bcn = stm.StaticMap(600, 600)
+    try:
+        m_bcn = stm.StaticMap(1500, 1500)
         for node in G.nodes:
-            print(node) #esto no vale pa na, era pa ver como daba los nodes
-            #ojo, aqui hay que poner primero longitud y luego latitud
-            marker = stm.CircleMarker((node[0], node[1]) , 'red', 6 )#esto es el tamaño del punto
+            marker = stm.CircleMarker((node[0], node[1]) , 'red', 3 )#esto es el tamaño del punto
             m_bcn.add_marker(marker)
 
         for edge in G.edges:
@@ -37,7 +35,7 @@ def Paint_Graph(G):
 
         image = m_bcn.render()
         image.save('estaciones.png')
-    #except:
+    except:
         print("This is not a graph!")
 
 def main():
