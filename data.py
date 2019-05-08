@@ -2,6 +2,7 @@ import pandas as pd
 import networkx as nx
 from geopy.geocoders import Nominatim
 from haversine import haversine
+import matplotlib.pyplot as plt
 from jutge import read
 
 def Create_Graph(dist = 1):
@@ -16,7 +17,8 @@ def Create_Graph(dist = 1):
         for dt in bicing.itertuples():
             coord2 = (dt.lat, dt.lon)
             if coord1 != coord2 and haversine(coord1, coord2) <= dist: G.add_edge(coord1, coord2)
-    print(list(G.edges))
+    nx.draw(G, with_labels = True)
+    plt.show()
     return G
 
 
