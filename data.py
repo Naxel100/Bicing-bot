@@ -39,16 +39,22 @@ def Plotgraph(G):
 def Components(G):
     print("This Graph has", nx.number_connected_components(G), "connected components")
 
+def Nodes(G):
+    print("This Graph has", nx.number_of_nodes(G), "nodes")
+
+def Edges(G):
+    print("This Graph has", nx.number_of_edges(G), "edges")
+
 def main():
     print("Introduce graph's distance: ", end = '')
-    x = read(int)
-    G = Graph(x)
+    G = Graph(read(int))
     action = read(str)
     while action is not None:
         if action == "graph":
-            x = read(int)
-            G = Graph(x)
+            G = Graph(read(int))
         elif action == "plotgraph": Plotgraph(G)
         elif action == "components": Components(G)
+        elif action == "nodes": Nodes(G)
+        elif action == "edges": Edges(G)
         action = read(str)
 main()
