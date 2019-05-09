@@ -23,6 +23,9 @@ def Create_Graph(dist = 1000):
                 G.add_edge(coord1, coord2)
     return G
 
+def Components(G):
+    return nx.number_connected_components(G)
+
 def Paint_Graph(G):
     try:
         m_bcn = stm.StaticMap(500, 500)
@@ -46,6 +49,7 @@ def main():
     for e in G.edges:
         print(e)
     Paint_Graph(G)
+    print(Components(G))
 
 
     #geolocator = Nominatim(user_agent="bicing_bot")
