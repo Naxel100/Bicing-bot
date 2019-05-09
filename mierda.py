@@ -4,7 +4,7 @@ import networkx as nx
 import staticmap as stm
 from geopy.geocoders import Nominatim
 from haversine import haversine
-from jutge import read
+from jutge import read, read_line
 
 def Create_Graph(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
@@ -49,12 +49,14 @@ def main():
     for e in G.edges:
         print(e)
     Paint_Graph(G)
-    print(Components(G))'''
+    print(Components(G))
 
     geolocator = Nominatim(user_agent = "bicing_bot")
     location1 = geolocator.geocode('Passeig de Gràcia 92' + ', Barcelona')
     print(location1)
-
+    '''
+    resto = read_line()
+    print(resto)
 
     #geolocator = Nominatim(user_agent="bicing_bot")
     #location1 = geolocator.geocode('Salvador Espriu, Mollet del Valles')

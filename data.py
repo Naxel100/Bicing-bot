@@ -2,9 +2,12 @@ import pep8
 import pandas as pd
 import networkx as nx
 import staticmap as stm
+import collections as cl
 from geopy.geocoders import Nominatim
 from haversine import haversine
 from jutge import read, read_line
+
+Pandas = cl.namedtuple('Pandas', 'lat lon')
 
 def Graph(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
@@ -20,7 +23,7 @@ def Graph(dist = 1000):
     print("Graph created!")
     return G
 
-def Plotgraph(G):
+def Plotgraph(G,name):
     try:
         m_bcn = stm.StaticMap(1000, 1000)
         for node in G.nodes:
@@ -32,7 +35,7 @@ def Plotgraph(G):
             m_bcn.add_line(line)
 
         image = m_bcn.render()
-        image.save('stations.png')
+        image.save(name)
         print("Image done!")
     except:
         print("This is not a graph!") # Revisar en el futuro el try / excepts
@@ -49,7 +52,6 @@ def Edges(G):
 def addressesTOcoordinates(addresses):
     try:
         geolocator = Nominatim(user_agent = "bicing_bot")
-        print(addresses)
         address1, address2 = addresses.split(',')
         location1 = geolocator.geocode(address1 + ', Barcelona')
         location2 = geolocator.geocode(address2 + ', Barcelona')
@@ -59,12 +61,33 @@ def addressesTOcoordinates(addresses):
 
 def Route(G, addresses):
     coord1, coord2 = addressesTOcoordinates(addresses)
-    Gc = G.complement()
-    for node in Gc.edges:
-        coord_node = (node.lat, node.lon)
-        Gc.add_edge(node, coord1, weight = 2*haversine(coord_node, coord1))
-        Gc.add_edge(node, coord1, weight = 2*haversine(coord_node, coord2))
-    Gc = union(G, Gc)
+    print(coord1)
+    print(coord2)
+    Gc = nx.complement(G)
+    #este bucle modifica los pesos
+    for edge in Gc.edges:
+        weight=haversine((edge[0].lat, edge[0].lon), (edge[1].lat, edge[1].lon))
+        Gc.add_edge(edge[0],edge[1],weight = 10/4*weight)
+    '''
+    ATENCION, para añadir los nodes coord1 y coord2,
+    los he creado de manera que se pueda acceder a sus coordenadas de la forma:
+    noseque.lat noseque.lon, para eso he creao un tipo namedtuple, que es lo mismo
+    que te devuelve itertuples() y por lo tanto el mismo formato que tienen las
+    estaciones del DataFrame.
+    '''
+    start = Pandas(lat=coord1[0] , lon=coord1[1])
+    finish = Pandas(lat=coord2[0] , lon=coord2[1])
+    Gc.add_node(start)
+    Gc.add_node(finish)
+    #este añade las arestas que unen start y finish con los demás
+    for node in Gc.nodes:
+        weight1=haversine((node.lat, node.lon),(start.lat, start.lon))
+        weight2=haversine((node.lat, node.lon),(finish.lat, finish.lon))
+        Gc.add_edge(node,start,weight = 10/4*weight1)
+        Gc.add_edge(node,finish,weight = 10/4*weight2)
+    Plotgraph(Gc,'complement.png')
+    Gc = nx.disjoint_union(G, Gc)
+
     # hacer dykstra con Gc
     # ¿Crear un nuevo grafo con el trayecto dado para poder printearlo?
     # Se podría calcular el tiempo estimado que tardará en hacer el trayecto.
@@ -76,7 +99,7 @@ def main():
     while action is not None:
         if action == "graph":
             G = Graph(read(int))
-        elif action == "plotgraph": Plotgraph(G)
+        elif action == "plotgraph": Plotgraph(G,'stations.png')
         elif action == "components": Components(G)
         elif action == "nodes": Nodes(G)
         elif action == "edges": Edges(G)
