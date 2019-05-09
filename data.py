@@ -16,8 +16,7 @@ def Graph(dist = 1000):
         G.add_node(st)
         for dt in bicing.itertuples():
             coord2 = (dt.lat, dt.lon)
-            weight = haversine(coord1, coord2)
-            if(st != dt and weight <= dist): G.add_edge(st, dt, weight = weight)
+            if(st != dt and haversine(coord1, coord2) <= dist): G.add_edge(st, dt)
     print("Graph created!")
     return G
 
@@ -46,6 +45,8 @@ def Nodes(G):
 
 def Edges(G):
     print("This Graph has", G.number_of_edges(), "edges")
+
+def Route
 
 def main():
     print("Introduce graph's distance: ", end = '')
