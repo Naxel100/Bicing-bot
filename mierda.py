@@ -1,7 +1,7 @@
 import pep8
 import pandas as pd
 import networkx as nx
-from staticmap import StaticMap, CircleMarker
+import staticmap as stm
 from geopy.geocoders import Nominatim
 from haversine import haversine
 from jutge import read
@@ -10,30 +10,30 @@ def Create_Graph(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
     bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
-    G = nx.DiGraph()
+    G = nx.Graph()
     n = bicing.size
     for st in bicing.itertuples():
-        coord1 = (st.lon, st.lat)
+        coord1 = (st.lat, st.lon)
         G.add_node(coord1)
         for dt in bicing.itertuples():
-            coord2 = (dt.lon, dt.lat)
+            coord2 = (dt.lat, dt.lon)
+            if dt.Index == 93 and st.Index == 94:
+                print(' '*5, haversine(coord1, coord2))
             if(st != dt and haversine(coord1, coord2) <= dist):
                 G.add_edge(coord1, coord2)
-
     return G
 
 def Paint_Graph(G):
     try:
-        m_bcn = StaticMap(500, 500)
+        m_bcn = stm.StaticMap(500, 500)
         for node in G.nodes:
-            print(node) #esto no vale pa na, era pa ver como daba los nodes
-            #ojo, aqui hay que poner primero longitud y luego latitud
-            marker = CircleMarker((node[0], node[1]) , 'red', 6)#esto es el tamaño del punto
+            marker = stm.CircleMarker((node[0], node[1]) , 'red', 3 )#esto es el tamaño del punto
             m_bcn.add_marker(marker)
+
         for edge in G.edges:
-            node1
-            marker = m_bcn.add_line(Line(((13.4, 52.5), (2.3, 48.9)), 'blue', 3))
-            m_bcn.add_marker(marker)
+            linea = stm.Line((edge[0],edge[1]), 'blue', 1)
+            m_bcn.add_line(linea)
+
         image = m_bcn.render()
         image.save('estaciones.png')
     except:
@@ -43,7 +43,8 @@ def main():
     x=read(int)
     G = Create_Graph(x)
     print(G.number_of_nodes())
-    print(list(G.edges))
+    for e in G.edges:
+        print(e)
     Paint_Graph(G)
 
 

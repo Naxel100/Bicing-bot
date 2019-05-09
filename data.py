@@ -23,6 +23,7 @@ def Create_Graph(dist = 1):
 
 
 def main():
+    '''
     G = Create_Graph()
     geolocator = Nominatim(user_agent="bicing_bot")
     location1 = geolocator.geocode('Salvador Espriu, Mollet del Valles')
@@ -30,4 +31,8 @@ def main():
     coord1 = (location1.latitude, location1.longitude)
     coord2 = (location2.latitude, location2.longitude)
     print(haversine(coord1, coord2))
+    '''
+    coord1 = (41.3927878, 2.1434059)
+    coord2 = (41.3922519, 2.1420435)
+    print(haversine())
 main()
