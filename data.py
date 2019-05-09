@@ -46,5 +46,6 @@ def main():
             x = read(int)
             G = Graph(x)
         elif action == "plotgraph": Plotgraph(G)
+        elif action == "components": Components(G)
         action = read(str)
 main()
