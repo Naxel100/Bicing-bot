@@ -87,5 +87,8 @@ def main():
         elif action == "components": Components(G)
         elif action == "nodes": Nodes(G)
         elif action == "edges": Edges(G)
+        elif action == "route":
+            adress1, adress2 = read(str, str)
+            Route(G, adress1, adress2)
         action = read(str)
 main()
