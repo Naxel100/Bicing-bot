@@ -81,11 +81,8 @@ def Route(G, addresses):
         weight = haversine((edge[0].lat, edge[0].lon), (edge[1].lat, edge[1].lon))
         Gc.add_edge(edge[0], edge[1], weight = 10/4 * weight)
 
-<<<<<<< HEAD
-=======
     Gc = nx.compose(G, Gc)
     Shortest_Path = nx.dijkstra_path(Gc, start, finish)
->>>>>>> f0c538c0065c37780add1b9ce1af35998dd7a0cd
 
     m_bcn = stm.StaticMap(1000, 1000)
 
