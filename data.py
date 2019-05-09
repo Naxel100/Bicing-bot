@@ -75,44 +75,29 @@ def Route(G, addresses):
     Gc = nx.complement(G)
     G.remove_node(start)
     G.remove_node(finish)
+
     #este bucle modifica los pesos
     for edge in Gc.edges:
         weight = haversine((edge[0].lat, edge[0].lon), (edge[1].lat, edge[1].lon))
         Gc.add_edge(edge[0], edge[1], weight = 10/4 * weight)
-        #Gc[edge[0]][edge[1]]['weight'] = weight
 
-    '''ATENCION, para añadir los nodes coord1 y coord2,
-    los he creado de manera que se pueda acceder a sus coordenadas de la forma:
-    noseque.lat noseque.lon, para eso he creao un tipo namedtuple, que es lo mismo
-    que te devuelve itertuples() y por lo tanto el mismo formato que tienen las
-    estaciones del DataFrame.
-    '''
-    #este añade las arestas que unen start y finish con los demás
-    '''for node in Gc.nodes:
-        weight1 = haversine((node.lat, node.lon),(start.lat, start.lon))
-        weight2 = haversine((node.lat, node.lon),(finish.lat, finish.lon))
-        Gc.add_edge(node, start, weight = 10/4 * weight1)
-        Gc.add_edge(node, finish, weight = 10/4 * weight2)'''
-    #Plotgraph(Gc,'complement.png')
     Gc = nx.compose(G, Gc)
-    print(nx.dijkstra_path(Gc, start, finish))
-
-    for edge in Shortest_Path:
-        print(edge)
-        print(edge[0])
-        print(edge[1])
-        print(edge[0].lat)
+    Shortest_Path = nx.dijkstra_path(Gc, start, finish)
 
     m_bcn = stm.StaticMap(1000, 1000)
-    for edge in Shortest_Path:
-        if Gc[edge[0]][edge[1]]['weight'] == haversine((edge[0].lat, edge[0][1].lon), (edge[1].lat, edge[1].lon)):
-            line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 0)
-        else:
-            line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'orange', 0)
 
-        marker1 = stm.CircleMarker((edge[0].lon, edge[0].lat) , 'red', 3 ) #esto es el tamaño del punto
-        marker2 = stm.CircleMarker((edge[1].lon, edge[1].lat) , 'red', 3 ) #esto es el tamaño del punto
-        m_bcn.add_marker(marker, marker2)
+    for i in range(len(Shortest_Path) - 1):
+        node1 = Shortest_Path[i]
+        node2 = Shortest_Path[i + 1]
+        if Gc[node1][node2]['weight'] == haversine((node1.lat, node1.lon), (node2.lat, node2.lon)):
+            line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'blue', 2)
+        else:
+            line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'orange', 2)
+
+        marker1 = stm.CircleMarker((node1.lon, node1.lat) , 'red', 3 ) #esto es el tamaño del punto
+        marker2 = stm.CircleMarker((node2.lon, node2.lat) , 'red', 3 ) #esto es el tamaño del punto
+        m_bcn.add_marker(marker1)
+        m_bcn.add_marker(marker2)
         m_bcn.add_line(line)
 
     image = m_bcn.render()
