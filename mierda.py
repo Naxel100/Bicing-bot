@@ -10,7 +10,7 @@ def Create_Graph(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
     bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
-    G = nx.DiGraph()
+    G = nx.Graph()
     n = bicing.size
     for st in bicing.itertuples():
         coord1 = (st.lon, st.lat)
