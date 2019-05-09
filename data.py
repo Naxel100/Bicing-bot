@@ -86,7 +86,9 @@ def Route(G, addresses):
         Gc.add_edge(node,start,weight = 10/4*weight1)
         Gc.add_edge(node,finish,weight = 10/4*weight2)
     Plotgraph(Gc,'complement.png')
-    Gc = nx.disjoint_union(G, Gc)
+    Gc = nx.compose(G, Gc)
+    Plotgraph(Gc,'union.png')
+    print(nx.dijkstra_path(Gc,start,finish))
 
     # hacer dykstra con Gc
     # ¿Crear un nuevo grafo con el trayecto dado para poder printearlo?
