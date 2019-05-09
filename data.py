@@ -97,11 +97,6 @@ def Route(G, addresses):
     Gc = nx.compose(G, Gc)
     print(nx.dijkstra_path(Gc, start, finish))
 
-    for edge in Shortest_Path:
-        print(edge)
-        print(edge[0])
-        print(edge[1])
-        print(edge[0].lat)
 
     m_bcn = stm.StaticMap(1000, 1000)
     for edge in Shortest_Path:
