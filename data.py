@@ -49,20 +49,25 @@ def Edges(G):
 def addressesTOcoordinates(addresses):
     try:
         geolocator = Nominatim(user_agent = "bicing_bot")
-        print("1")
+        print(addresses)
         address1, address2 = addresses.split(',')
-        print("2")
         location1 = geolocator.geocode(address1 + ', Barcelona')
-        print("3")
         location2 = geolocator.geocode(address2 + ', Barcelona')
-        print("4")
         return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
     except:
         return None
 
 def Route(G, addresses):
     coord1, coord2 = addressesTOcoordinates(addresses)
-    print(coord1,coord2)
+    Gc = G.complement()
+    for node in Gc.edges:
+        coord_node = (node.lat, node.lon)
+        Gc.add_edge(node, coord1, weight = 2*haversine(coord_node, coord1))
+        Gc.add_edge(node, coord1, weight = 2*haversine(coord_node, coord2))
+    Gc = union(G, Gc)
+    # hacer dykstra con Gc
+    # ¿Crear un nuevo grafo con el trayecto dado para poder printearlo?
+    # Se podría calcular el tiempo estimado que tardará en hacer el trayecto.
 
 def main():
     print("Introduce graph's distance: ", end = '')
@@ -77,7 +82,6 @@ def main():
         elif action == "edges": Edges(G)
         elif action == "route":
             addresses = read_line()
-            print(addresses)
             Route(G, addresses)
         action = read(str)
 main()

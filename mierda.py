@@ -43,13 +43,17 @@ def Paint_Graph(G):
         print("This is not a graph!")
 
 def main():
-    x=read(int)
+    '''x=read(int)
     G = Create_Graph(x)
     print(G.number_of_nodes())
     for e in G.edges:
         print(e)
     Paint_Graph(G)
-    print(Components(G))
+    print(Components(G))'''
+
+    geolocator = Nominatim(user_agent = "bicing_bot")
+    location1 = geolocator.geocode('Passeig de Gràcia 92' + ', Barcelona')
+    print(location1)
 
 
     #geolocator = Nominatim(user_agent="bicing_bot")
