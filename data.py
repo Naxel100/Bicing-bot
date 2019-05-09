@@ -16,7 +16,8 @@ def Graph(dist = 1000):
         G.add_node(st)
         for dt in bicing.itertuples():
             coord2 = (dt.lat, dt.lon)
-            if(st != dt and haversine(coord1, coord2) <= dist): G.add_edge(st, dt)
+            weight = haversine(coord1, coord2)
+            if(st != dt and weight <= dist): G.add_edge(st, dt, weight = weight)
     print("Graph created!")
     return G
 
@@ -38,13 +39,13 @@ def Plotgraph(G):
         print("This is not a graph!") # Revisar en el futuro el try / excepts
 
 def Components(G):
-    print("This Graph has", nx.number_connected_components(G), "connected components")
+    print("This Graph has", G.number_connected_components(), "connected components")
 
 def Nodes(G):
-    print("This Graph has", nx.number_of_nodes(G), "nodes")
+    print("This Graph has", G.number_of_nodes(), "nodes")
 
 def Edges(G):
-    print("This Graph has", nx.number_of_edges(G), "edges")
+    print("This Graph has", G.number_of_edges(), "edges")
 
 def main():
     print("Introduce graph's distance: ", end = '')
