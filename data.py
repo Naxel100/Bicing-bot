@@ -4,7 +4,7 @@ import networkx as nx
 import staticmap as stm
 from geopy.geocoders import Nominatim
 from haversine import haversine
-from jutge import read
+from jutge import read, read_line
 
 def Graph(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
@@ -46,18 +46,22 @@ def Nodes(G):
 def Edges(G):
     print("This Graph has", G.number_of_edges(), "edges")
 
-def addressesTOcoordinates(adresses):
+def addressesTOcoordinates(addresses):
     try:
-        geolocator = Nominatim(user_agent="bicing_bot")
-        address1, address2 = adresses.split(',')
+        geolocator = Nominatim(user_agent = "bicing_bot")
+        print("1")
+        address1, address2 = addresses.split(',')
+        print("2")
         location1 = geolocator.geocode(address1 + ', Barcelona')
+        print("3")
         location2 = geolocator.geocode(address2 + ', Barcelona')
+        print("4")
         return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
     except:
         return None
 
-def Route(G, adresses):
-    coord1 , coord2 = addressesTOcoordinates(adresses)
+def Route(G, addresses):
+    coord1, coord2 = addressesTOcoordinates(addresses)
     print(coord1,coord2)
 
 def main():
@@ -72,7 +76,8 @@ def main():
         elif action == "nodes": Nodes(G)
         elif action == "edges": Edges(G)
         elif action == "route":
-            adresses = read(str)
-            Route(G, adresses)
+            addresses = read_line()
+            print(addresses)
+            Route(G, addresses)
         action = read(str)
 main()
