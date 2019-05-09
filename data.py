@@ -13,21 +13,22 @@ def Graph(dist = 1000):
     G = nx.Graph()
     for st in bicing.itertuples():
         coord1 = (st.lat, st.lon)
-        G.add_node(coord1)
+        G.add_node(st)
         for dt in bicing.itertuples():
             coord2 = (dt.lat, dt.lon)
-            if(st != dt and haversine(coord1, coord2) <= dist): G.add_edge(coord1, coord2)
+            if(st != dt and haversine(coord1, coord2) <= dist): G.add_edge(st, dt)
+    print("Graph created!")
     return G
 
 def Plotgraph(G):
     try:
         m_bcn = stm.StaticMap(1000, 1000)
         for node in G.nodes:
-            marker = stm.CircleMarker((node[1], node[0]) , 'red', 3 )#esto es el tamaño del punto
+            marker = stm.CircleMarker((node.lon, node.lat) , 'red', 3 )#esto es el tamaño del punto
             m_bcn.add_marker(marker)
 
         for edge in G.edges:
-            line = stm.Line(((edge[0][1],edge[0][0]),(edge[1][1],edge[1][0])), 'blue', 0)
+            line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 0)
             m_bcn.add_line(line)
 
         image = m_bcn.render()
