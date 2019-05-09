@@ -25,13 +25,13 @@ def Create_Graph(dist = 1000):
 
 def Paint_Graph(G):
     try:
-        m_bcn = stm.StaticMap(500, 500)
+        m_bcn = stm.StaticMap(4000, 4000)
         for node in G.nodes:
-            marker = stm.CircleMarker((node[0], node[1]) , 'red', 3 )#esto es el tamaño del punto
+            marker = stm.CircleMarker((node[1], node[0]) , 'red', 3 )#esto es el tamaño del punto
             m_bcn.add_marker(marker)
 
         for edge in G.edges:
-            linea = stm.Line((edge[0],edge[1]), 'blue', 1)
+            linea = stm.Line(((edge[0][1],edge[0][0]),(edge[1][1],edge[1][0])), 'blue', 0)
             m_bcn.add_line(linea)
 
         image = m_bcn.render()
