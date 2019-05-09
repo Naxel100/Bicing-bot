@@ -36,6 +36,9 @@ def Plotgraph(G):
     except:
         print("This is not a graph!") # Revisar en el futuro el try / excepts
 
+def Components(G):
+    print("This Graph has", nx.number_connected_components(G), "connected components")
+
 def main():
     print("Introduce graph's distance: ", end = '')
     x = read(int)

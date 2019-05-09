@@ -24,7 +24,7 @@ def Create_Graph(dist = 1000):
     return G
 
 def Components(G):
-    print("This Graph has",nx.number_connected_components(G),"connected components")
+    print("This Graph has", nx.number_connected_components(G),"connected components")
 
 def Paint_Graph(G):
     try:
