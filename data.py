@@ -56,15 +56,11 @@ def Edges(G):
 
 
 def addressesTOcoordinates(addresses):
-    try:
-        geolocator = Nominatim(user_agent = "bicing_bot")
-        address1, address2 = addresses.split(',')
-        location1 = geolocator.geocode(address1 + ', Barcelona')
-        location2 = geolocator.geocode(address2 + ', Barcelona')
-        return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
-    except:
-        return None
-
+    geolocator = Nominatim(user_agent = "bicing_bot")
+    address1, address2 = addresses.split(',')
+    location1 = geolocator.geocode(address1 + ', Barcelona')
+    location2 = geolocator.geocode(address2 + ', Barcelona')
+    return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
 
 def Route(G, addresses):
     coord1, coord2 = addressesTOcoordinates(addresses)
