@@ -7,6 +7,12 @@ from telegram.ext import CommandHandler
 def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Hola! Soc un bot bàsic.")
 
+def PutosCracks(bot, update):
+    bot.send_message(chat_id=update.message.chat_id, text="Made by:")
+    bot.send_message(chat_id=update.message.chat_id, text="Àlex Ferrando de las Morenas")
+    bot.send_message(chat_id=update.message.chat_id, text="Elías Abad Rocamora")
+    bot.send_message(chat_id=update.message.chat_id, text="Universitat Politècnica de Catalunya, 2019")
+
 def graph(bot, update, args, user_data):
     try:
         G = d.Graph(int(args[0]))
@@ -69,6 +75,8 @@ updater = Updater(token = TOKEN)
 dispatcher = updater.dispatcher
 
 dispatcher.add_handler(CommandHandler('start', start))
+
+dispatcher.add_handler(CommandHandler('authors', PutosCracks))
 
 dispatcher.add_handler(CommandHandler('graph', graph, pass_args = True, pass_user_data = True))
 
