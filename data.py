@@ -26,21 +26,18 @@ def Graph(dist = 1000):
 
 
 def Plotgraph(G, name):
-    try:
-        m_bcn = stm.StaticMap(1000, 1000)
-        for node in G.nodes:
-            marker = stm.CircleMarker((node.lon, node.lat) , 'red', 3 ) #esto es el tamaño del punto
-            m_bcn.add_marker(marker)
+    m_bcn = stm.StaticMap(1000, 1000)
+    for node in G.nodes:
+        marker = stm.CircleMarker((node.lon, node.lat) , 'red', 3 ) #esto es el tamaño del punto
+        m_bcn.add_marker(marker)
 
-        for edge in G.edges:
-            line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 0)
-            m_bcn.add_line(line)
+    for edge in G.edges:
+        line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 0)
+        m_bcn.add_line(line)
 
-        image = m_bcn.render()
-        image.save(name)
-        print("Image done!")
-    except:
-        print("This is not a graph!") # Revisar en el futuro el try / excepts
+    image = m_bcn.render()
+    image.save(name)
+    print("Image done!")
 
 
 def Components(G):
