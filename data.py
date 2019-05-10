@@ -26,21 +26,25 @@ def Graph(dist = 1000):
 
 
 def Plotgraph(G, name):
-    try:
-        m_bcn = stm.StaticMap(1000, 1000)
-        for node in G.nodes:
-            marker = stm.CircleMarker((node.lon, node.lat) , 'red', 3 ) #esto es el tamaño del punto
-            m_bcn.add_marker(marker)
+    m_bcn = stm.StaticMap(1000, 1000)
+    for node in G.nodes:
+        marker = stm.CircleMarker((node.lon, node.lat) , 'red', 3 ) #esto es el tamaño del punto
+        m_bcn.add_marker(marker)
 
-        for edge in G.edges:
-            line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 0)
-            m_bcn.add_line(line)
+    for edge in G.edges:
+        line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 0)
+        m_bcn.add_line(line)
 
-        image = m_bcn.render()
-        image.save(name)
-        print("Image done!")
-    except:
-        print("This is not a graph!") # Revisar en el futuro el try / excepts
+    image = m_bcn.render()
+    image.save(name)
+    print("Image done!")
+
+
+def time_complete(t):
+    h = int(t)
+    m = int(((t - h) * 60))
+    s = int((((t - h) * 60) - m) * 60)
+    return (h, m, s)
 
 
 def Components(G):
@@ -56,14 +60,11 @@ def Edges(G):
 
 
 def addressesTOcoordinates(addresses):
-    try:
-        geolocator = Nominatim(user_agent = "bicing_bot")
-        address1, address2 = addresses.split(',')
-        location1 = geolocator.geocode(address1 + ', Barcelona')
-        location2 = geolocator.geocode(address2 + ', Barcelona')
-        return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
-    except:
-        return None
+    geolocator = Nominatim(user_agent = "bicing_bot")
+    address1, address2 = addresses.split(',')
+    location1 = geolocator.geocode(address1 + ', Barcelona')
+    location2 = geolocator.geocode(address2 + ', Barcelona')
+    return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
 
 
 def Route(G, addresses):
@@ -85,13 +86,16 @@ def Route(G, addresses):
     Shortest_Path = nx.dijkstra_path(Gc, start, finish)
 
     m_bcn = stm.StaticMap(1000, 1000)
-
+    t = 0
     for i in range(len(Shortest_Path) - 1):
         node1 = Shortest_Path[i]
         node2 = Shortest_Path[i + 1]
-        if Gc[node1][node2]['weight'] == haversine((node1.lat, node1.lon), (node2.lat, node2.lon)):
+        weight = haversine((node1.lat, node1.lon), (node2.lat, node2.lon))
+        if Gc[node1][node2]['weight'] == weight:
+            t += weight / 10
             line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'blue', 2)
         else:
+            t += weight / 4
             line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'orange', 2)
 
         marker1 = stm.CircleMarker((node1.lon, node1.lat) , 'red', 3 ) #esto es el tamaño del punto
@@ -103,10 +107,11 @@ def Route(G, addresses):
     image = m_bcn.render()
     image.save("Shortest_Path.png")
     print("Image done!")
+    tf = time_complete(t)
+    if tf[0] != 0: print(tf[0], "h ", end = '')
+    if tf[0] != 0 or tf[1] != 0: print(tf[1], "m ", end = '')
+    print(tf[2], "s")
 
-    # hacer dykstra con Gc
-    # ¿Crear un nuevo grafo con el trayecto dado para poder printearlo?
-    # Se podría calcular el tiempo estimado que tardará en hacer el trayecto.
 
 def main():
     print("Introduce graph's distance: ", end = '')
