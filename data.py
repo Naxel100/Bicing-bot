@@ -111,9 +111,6 @@ def Route(G, addresses):
     if tf[0] != 0: print(tf[0], "h ", end = '')
     if tf[0] != 0 or tf[1] != 0: print(tf[1], "m ", end = '')
     print(tf[2], "s")
-    # hacer dykstra con Gc
-    # ¿Crear un nuevo grafo con el trayecto dado para poder printearlo?
-    # Se podría calcular el tiempo estimado que tardará en hacer el trayecto.
 
 
 def main():
