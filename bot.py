@@ -14,6 +14,8 @@ def graph(bot, update, args):
         G = d.Graph()
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: 1000")
 
+def plotgraph(bot, update):
+    bot.send_photo(chat_id=update.message.chat_id, photo=open("stations.png", 'rb'))
 
 TOKEN = open('token.txt').read().strip()
 
@@ -23,5 +25,7 @@ dispatcher = updater.dispatcher
 dispatcher.add_handler(CommandHandler('start', start))
 
 dispatcher.add_handler(CommandHandler('graph', graph, pass_args=True))
+
+dispatcher.add_handler(CommandHandler('plotgraph', plotgraph))
 
 updater.start_polling()
