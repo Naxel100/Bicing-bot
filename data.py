@@ -44,15 +44,15 @@ def Plotgraph(G, name):
 
 
 def Components(G):
-    print("This Graph has", G.number_connected_components(), "connected components")
+    print("This Graph has", nx.number_connected_components(G), "connected components")
 
 
 def Nodes(G):
-    print("This Graph has", G.number_of_nodes(), "nodes")
+    print("This Graph has", nx.number_of_nodes(G), "nodes")
 
 
 def Edges(G):
-    print("This Graph has", G.number_of_edges(), "edges")
+    print("This Graph has", nx.number_of_edges(G), "edges")
 
 
 def addressesTOcoordinates(addresses):
