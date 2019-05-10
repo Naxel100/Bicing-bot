@@ -112,7 +112,7 @@ def Route(G, addresses):
     if tf[0] != 0 or tf[1] != 0: print(tf[1], "m ", end = '')
     print(tf[2], "s")
 
-
+'''
 def main():
     print("Introduce graph's distance: ", end = '')
     G = Graph(read(int))
@@ -129,3 +129,4 @@ def main():
             Route(G, addresses)
         action = read(str)
 main()
+'''
