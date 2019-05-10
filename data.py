@@ -65,8 +65,30 @@ def addressesTOcoordinates(addresses):
     location2 = geolocator.geocode(address2 + ', Barcelona')
     return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
 
-#def Plotpath(P):
+def Plotpath_and_calculate_time(Gc, Path, filename):
+        m_bcn = stm.StaticMap(1000, 1000)
+        t = 0
+        for i in range(len(Path) - 1):
+            node1 = Path[i]
+            node2 = Path[i + 1]
+            weight = haversine((node1.lat, node1.lon), (node2.lat, node2.lon))
+            if Gc[node1][node2]['weight'] == weight:
+                t += weight / 10
+                line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'blue', 2)
+            else:
+                t += weight / 4
+                line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'orange', 2)
 
+            marker1 = stm.CircleMarker((node1.lon, node1.lat) , 'red', 3) #esto es el tamaño del punto
+            marker2 = stm.CircleMarker((node2.lon, node2.lat) , 'red', 3) #esto es el tamaño del punto
+            m_bcn.add_marker(marker1)
+            m_bcn.add_marker(marker2)
+            m_bcn.add_line(line)
+
+        image = m_bcn.render()
+        image.save(filename)
+        print("Image done!")
+        return time_complete(t)
 
 def Route(G, addresses, filename):
     coord1, coord2 = addressesTOcoordinates(addresses)
@@ -85,30 +107,7 @@ def Route(G, addresses, filename):
 
     Gc = nx.compose(G, Gc)
     Shortest_Path = nx.dijkstra_path(Gc, start, finish)
-
-    m_bcn = stm.StaticMap(1000, 1000)
-    t = 0
-    for i in range(len(Shortest_Path) - 1):
-        node1 = Shortest_Path[i]
-        node2 = Shortest_Path[i + 1]
-        weight = haversine((node1.lat, node1.lon), (node2.lat, node2.lon))
-        if Gc[node1][node2]['weight'] == weight:
-            t += weight / 10
-            line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'blue', 2)
-        else:
-            t += weight / 4
-            line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'orange', 2)
-
-        marker1 = stm.CircleMarker((node1.lon, node1.lat) , 'red', 3) #esto es el tamaño del punto
-        marker2 = stm.CircleMarker((node2.lon, node2.lat) , 'red', 3) #esto es el tamaño del punto
-        m_bcn.add_marker(marker1)
-        m_bcn.add_marker(marker2)
-        m_bcn.add_line(line)
-
-    image = m_bcn.render()
-    image.save(filename)
-    print("Image done!")
-    return time_complete(t)
+    return Plotpath_and_calculate_time(Gc, Shortest_Path, filename)
 
 '''
 def main():

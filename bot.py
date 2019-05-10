@@ -39,11 +39,19 @@ def components(bot, update, user_data):
     components = d.Components(user_data['graph'])
     bot.send_message(chat_id=update.message.chat_id, text="This Graph has: %d connected components" % components)
 
+#lo mismo que read_line pero mejor (puto jutge y Jordi Petit!)
 def args_in_a_line(args):
     direction = ''
     for arg in args:
         direction += str(arg) + ' '
     return direction
+
+def time_output(time):
+    message = 'Time from start to destination: '
+    if time[0] != 0: message += "%d h " % time[0]
+    if time[0] != 0 or time[1] != 0: message += "%d m " % time[1]
+    message += "%d s" % time[2]
+    return message
 
 def route(bot, update, args, user_data):
     addresses = args_in_a_line(args)
@@ -52,10 +60,7 @@ def route(bot, update, args, user_data):
     time = d.Route(user_data['graph'], addresses, filename)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
-    message = 'Time from start to destination: '
-    if time[0] != 0: message += "%d h " % time[0]
-    if time[0] != 0 or time[1] != 0: message += "%d m " % time[1]
-    message += "%d s" % time[2]
+    message = time_output(time)
     bot.send_message(chat_id=update.message.chat_id, text = message)
 
 TOKEN = open('token.txt').read().strip()
