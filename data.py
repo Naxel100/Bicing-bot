@@ -48,15 +48,15 @@ def time_complete(t):
 
 
 def Components(G):
-    print("This Graph has", nx.number_connected_components(G), "connected components")
+    return nx.number_connected_components(G)
 
 
 def Nodes(G):
-    print("This Graph has", nx.number_of_nodes(G), "nodes")
+    return nx.number_of_nodes(G)
 
 
 def Edges(G):
-    print("This Graph has", nx.number_of_edges(G), "edges")
+    return nx.number_of_edges(G)
 
 
 def addressesTOcoordinates(addresses):
