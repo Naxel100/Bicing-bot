@@ -28,11 +28,11 @@ def Graph(dist = 1000):
 def Plotgraph(G, name):
     m_bcn = stm.StaticMap(1000, 1000)
     for node in G.nodes:
-        marker = stm.CircleMarker((node.lon, node.lat) , 'red', 3 ) #esto es el tamaño del punto
+        marker = stm.CircleMarker((node.lon, node.lat) , 'red', 3) #esto es el tamaño del punto
         m_bcn.add_marker(marker)
 
     for edge in G.edges:
-        line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 0)
+        line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 1)
         m_bcn.add_line(line)
 
     image = m_bcn.render()
@@ -98,8 +98,8 @@ def Route(G, addresses):
             t += weight / 4
             line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'orange', 2)
 
-        marker1 = stm.CircleMarker((node1.lon, node1.lat) , 'red', 3 ) #esto es el tamaño del punto
-        marker2 = stm.CircleMarker((node2.lon, node2.lat) , 'red', 3 ) #esto es el tamaño del punto
+        marker1 = stm.CircleMarker((node1.lon, node1.lat) , 'red', 3) #esto es el tamaño del punto
+        marker2 = stm.CircleMarker((node2.lon, node2.lat) , 'red', 3) #esto es el tamaño del punto
         m_bcn.add_marker(marker1)
         m_bcn.add_marker(marker2)
         m_bcn.add_line(line)

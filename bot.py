@@ -14,14 +14,19 @@ def graph(bot, update, args):
         G = d.Graph()
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: 1000")
 
+def nodes(bot, update):
+    nodes = d.Nodes(G)
+    bot.send_message(chat_id=update.message.chat_id, text="%d" % nodes)
 
 TOKEN = open('token.txt').read().strip()
 
-updater = Updater(token=TOKEN)
+updater = Updater(token = TOKEN)
 dispatcher = updater.dispatcher
 
 dispatcher.add_handler(CommandHandler('start', start))
 
-dispatcher.add_handler(CommandHandler('graph', graph, pass_args=True))
+dispatcher.add_handler(CommandHandler('graph', graph, pass_args = True))
+
+dispatcher.add_handler(CommandHandler('nodes', nodes))
 
 updater.start_polling()
