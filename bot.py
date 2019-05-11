@@ -2,10 +2,15 @@ import telegram
 import os
 import data as d
 from telegram.ext import Updater
-from telegram.ext import CommandHandler
+from geopy.geocoders import Nominatim
+from telegram.ext import CommandHandler, MessageHandler, Filters
 
-def start(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Hola! Soc un bot bàsic.")
+#Añadido creación de grafo por defecto con dist = 1000
+def start(bot, update, user_data):
+    G = d.Graph()
+    user_data['graph'] = G
+    username = update.message.chat.first_name
+    bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\n What can I do for you?" % username)
 
 def PutosCracks(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text="Made by:")
@@ -59,22 +64,48 @@ def time_output(time):
     message += "%d s" % time[2]
     return message
 
+def from_ubi_to_coordinates(address, update, bot, user_data):
+    geolocator = Nominatim(user_agent = "bicing_bot")
+    try : coord = user_data['coords']
+    except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that your current location is not available. Send it to me and try it again")
+    try:location1 = geolocator.geocode(address + ', Barcelona')
+    except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that the direction given doesn't exist. Please try it again.")
+    return (location1.latitude, location1.longitude), coord
+
+
+def addressesTOcoordinates(addresses, update, bot, user_data):
+    geolocator = Nominatim(user_agent = "bicing_bot")
+    try: address1, address2 = addresses.split(',')
+    except: return from_ubi_to_coordinates(addresses, update, bot, user_data)
+    try:
+        location1 = geolocator.geocode(address1 + ', Barcelona')
+        location2 = geolocator.geocode(address2 + ', Barcelona')
+        return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
+    except:
+        bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that some direction doesn't exist. Please try it again.")
+
 def route(bot, update, args, user_data):
     addresses = args_in_a_line(args)
+    coord1, coord2 = addressesTOcoordinates(addresses, update, bot, user_data)
     id = str(update.message.chat_id)
     filename = 'shortest_path' + '_' + id + '.png'
-    time = d.Route(user_data['graph'], addresses, filename)
+    time = d.Route(user_data['graph'], coord1, coord2, filename)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
     message = time_output(time)
     bot.send_message(chat_id=update.message.chat_id, text = message)
+
+def where(bot, update, user_data):
+    user_data['coords'] = update.message.location.latitude, update.message.location.longitude
+    coord = user_data['coords']
+    print(coord)
 
 TOKEN = open('token.txt').read().strip()
 
 updater = Updater(token = TOKEN)
 dispatcher = updater.dispatcher
 
-dispatcher.add_handler(CommandHandler('start', start))
+dispatcher.add_handler(CommandHandler('start', start, pass_user_data = True))
 
 dispatcher.add_handler(CommandHandler('authors', PutosCracks))
 
@@ -89,5 +120,7 @@ dispatcher.add_handler(CommandHandler('components', components, pass_user_data =
 dispatcher.add_handler(CommandHandler('plotgraph', plotgraph, pass_user_data = True))
 
 dispatcher.add_handler(CommandHandler('route', route, pass_args = True, pass_user_data = True))
+
+dispatcher.add_handler(MessageHandler(Filters.location, where, pass_user_data=True))
 
 updater.start_polling()

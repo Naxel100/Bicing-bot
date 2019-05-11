@@ -43,6 +43,15 @@ def Paint_Graph(G):
         print("This is not a graph!")
 
 def main():
+    G = nx.Graph()
+    start = (1,0)
+    finish = (2,2)
+    G.add_nodes_from([start, finish])
+    cont = 0
+    for node in G.nodes:
+        print(cont)
+        print(node)
+        cont += 1
     '''x=read(int)
     G = Create_Graph(x)
     print(G.number_of_nodes())
