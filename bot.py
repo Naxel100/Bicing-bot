@@ -13,10 +13,13 @@ def start(bot, update, user_data):
     bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\n What can I do for you?" % username)
 
 def PutosCracks(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Made by:")
-    bot.send_message(chat_id=update.message.chat_id, text="Àlex Ferrando de las Morenas")
-    bot.send_message(chat_id=update.message.chat_id, text="Elías Abad Rocamora")
-    bot.send_message(chat_id=update.message.chat_id, text="Universitat Politècnica de Catalunya, 2019")
+    message = "Made by: \n" \
+              "Àlex Ferrando de las Morenas \n" \
+              "& \n" \
+              "Elías Abad Rocamora \n" \
+              "___________________________________________\n" \
+              "Universitat Politècnica de Catalunya, 2019"
+    bot.send_message(chat_id=update.message.chat_id, text = message)
 
 def graph(bot, update, args, user_data):
     try:
