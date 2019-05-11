@@ -10,7 +10,7 @@ def start(bot, update, user_data):
     G = d.Graph()
     user_data['graph'] = G
     username = update.message.chat.first_name
-    bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\n What can I do for you?" % username)
+    bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nWhat can I do for you?" % username)
 
 #que fino willy
 def PutosCracks(bot, update):
