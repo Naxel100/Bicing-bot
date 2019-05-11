@@ -14,14 +14,15 @@ def Graph(dist = 1000):
     bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
     G = nx.Graph()
-    for st in bicing.itertuples():
-        coord1 = (st.lat, st.lon)
-        G.add_node(st)
-        for dt in bicing.itertuples():
-            coord2 = (dt.lat, dt.lon)
-            distance = haversine((st.lat, st.lon), (dt.lat, dt.lon))
-            if(st != dt and distance <= dist): G.add_edge(st, dt, weight = distance)
-    print("Graph created!")              # Chivato
+    v = sorted(list(bicing.itertuples()), key=lambda station: station.lat)
+    for i in range(len(v)):
+        G.add_node(v[i])
+        j = i + 1
+        while(j < len(v) and v[j].lat - v[i].lat <= dist):
+            distance = haversine((v[i].lat, v[i].lon), (v[j].lat, v[j].lon))
+            if distance <= dist: G.add_edge(v[i] , v[j], weight = distance)
+            j += 1
+    print("Graph done!")
     return G
 
 

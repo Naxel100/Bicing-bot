@@ -17,8 +17,8 @@ def Graph_supuestamente_rapido(dist = 1000):
         G.add_node(v[i])
         j = i + 1
         while(j < len(v) and v[j].lat - v[i].lat <= dist):
-            if haversine((v[i].lat, v[i].lon), (v[j].lat, v[j].lon)) <= dist:
-                G.add_edge(v[i] , v[j])
+            distance = haversine((v[i].lat, v[i].lon), (v[j].lat, v[j].lon))
+            if distance <= dist: G.add_edge(v[i] , v[j], weight = distance)
             j += 1
     print("Graph done!")
     return G
