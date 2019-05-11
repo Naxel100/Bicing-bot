@@ -40,6 +40,8 @@ def plotgraph(bot, update, user_data):
     filename = 'stations' + '_' + id + '.png'
     #este mensaje es solo pa ver lo chulo que queda el nombre del archivo
     bot.send_message(chat_id=update.message.chat_id, text = filename)
+    # te molaria poner aqui un mensaje del tipo que espere un momento,
+    # porque tarda un poco y eso. si no suda tampoco es nada importante
     d.Plotgraph(user_data['graph'] , filename)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
