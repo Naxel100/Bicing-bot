@@ -109,6 +109,9 @@ def where(bot, update, user_data):
     coord = user_data['coords']
     print(coord)
 
+def unknown(bot, update):
+    bot.send_message(chat_id=update.message.chat_id, text="Sorry, I didn't understand that command 😅")
+
 TOKEN = open('token.txt').read().strip()
 
 updater = Updater(token = TOKEN)
@@ -129,6 +132,8 @@ dispatcher.add_handler(CommandHandler('components', components, pass_user_data =
 dispatcher.add_handler(CommandHandler('plotgraph', plotgraph, pass_user_data = True))
 
 dispatcher.add_handler(CommandHandler('route', route, pass_args = True, pass_user_data = True))
+
+dispatcher.add_handler(MessageHandler(Filters.command, unknown))
 
 dispatcher.add_handler(MessageHandler(Filters.location, where, pass_user_data=True))
 
