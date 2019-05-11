@@ -26,6 +26,21 @@ def Graph(dist = 1000):
     return G
 
 
+def Nearest_station(G, coord):
+    first = True
+    for node in G.nodes:
+        coord1 = (node.lat, node.lon)
+        dist = haversine(coord, coord1)
+        if first:
+            min = dist
+            first = False
+            res = node
+        elif dist < min:
+            min = dist
+            res = node
+    return res.address
+
+
 def Plotgraph(G, filename):
     m_bcn = stm.StaticMap(1000, 1000)
 

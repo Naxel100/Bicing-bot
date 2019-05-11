@@ -76,10 +76,9 @@ def from_ubi_to_coordinates(address, update, bot, user_data):
     geolocator = Nominatim(user_agent = "bicing_bot")
     try : coord = user_data['coords']
     except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that your current location is not available. Send it to me and try it again")
-    try:location1 = geolocator.geocode(address + ', Barcelona')
+    try: location1 = geolocator.geocode(address + ', Barcelona')
     except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that the direction given doesn't exist. Please try it again.")
     return (location1.latitude, location1.longitude), coord
-
 
 def addressesTOcoordinates(addresses, update, bot, user_data):
     geolocator = Nominatim(user_agent = "bicing_bot")
@@ -103,6 +102,19 @@ def route(bot, update, args, user_data):
     os.remove(filename)
     message = time_output(time)
     bot.send_message(chat_id=update.message.chat_id, text = message)
+
+def nearest_station(bot, update, user_data, args):
+    geolocator = Nominatim(user_agent = "bicing_bot")
+    try:
+        address = args_in_a_line(args)
+        location = geolocator.geocode(address + ', Barcelona')
+        coord = (location.latitude, location.longitude)
+    except:
+        try : coord = user_data['coords']
+        except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that your current location is not available. Send it to me and try it again")
+    n_station = d.Nearest_station(user_data['graph'], coord)
+    bot.send_message(chat_id=update.message.chat_id, text = n_station)
+
 
 def where(bot, update, user_data):
     user_data['coords'] = update.message.location.latitude, update.message.location.longitude
@@ -132,6 +144,8 @@ dispatcher.add_handler(CommandHandler('components', components, pass_user_data =
 dispatcher.add_handler(CommandHandler('plotgraph', plotgraph, pass_user_data = True))
 
 dispatcher.add_handler(CommandHandler('route', route, pass_args = True, pass_user_data = True))
+
+dispatcher.add_handler(CommandHandler('nearest_station', nearest_station, pass_user_data = True, pass_args = True))
 
 dispatcher.add_handler(MessageHandler(Filters.command, unknown))
 
