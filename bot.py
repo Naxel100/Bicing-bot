@@ -43,4 +43,6 @@ dispatcher.add_handler(CommandHandler('edges', edges, pass_user_data = True))
 dispatcher.add_handler(CommandHandler('components', components, pass_user_data = True))
 
 
+dispatcher.add_handler(CommandHandler('plotgraph', plotgraph))
+
 updater.start_polling()
