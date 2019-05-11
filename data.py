@@ -86,6 +86,9 @@ def Plotpath_and_calculate_time(Gc, Path, filename):
         print(time_complete(time))
         return time_complete(time)
 
+#Calcula el camino más corto, crea la imagen de la ruta a seguir
+#y devuelve un vector de la forma: (horas, minutos, segundos) representando
+#el tiempo estimado de realización de la ruta.
 def Route(G, coord1, coord2, filename):
     start = Pandas(lat = coord1[0] , lon = coord1[1])
     finish = Pandas(lat = coord2[0] , lon = coord2[1])

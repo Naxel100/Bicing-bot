@@ -22,13 +22,15 @@ def PutosCracks(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text = message)
 
 def graph(bot, update, args, user_data):
-    try:
+    if len(args) == 1:
         G = d.Graph(int(args[0]))
+        user_data['graph'] = G
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: %s" % args[0])
-    except:
+    elif len(args) == 0:
         G = d.Graph()
+        user_data['graph'] = G
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: 1000")
-    user_data['graph'] = G
+    else: bot.send_message(chat_id=update.message.chat_id, text="You should only introduce one distance")
 
 #d.Plotgraph crea una imagen con nombre filename, se manda esta imagen
 #por chat y se elimina del directorio
@@ -79,6 +81,7 @@ def from_ubi_to_coordinates(address, update, bot, user_data):
 def addressesTOcoordinates(addresses, update, bot, user_data):
     geolocator = Nominatim(user_agent = "bicing_bot")
     try: address1, address2 = addresses.split(',')
+    #entra al except si no hay una coma en el mensaje, es decir, solo hay una dirección
     except: return from_ubi_to_coordinates(addresses, update, bot, user_data)
     try:
         location1 = geolocator.geocode(address1 + ', Barcelona')
