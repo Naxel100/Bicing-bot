@@ -42,6 +42,7 @@ def plotgraph(bot, update, user_data):
     bot.send_message(chat_id=update.message.chat_id, text = filename)
     # te molaria poner aqui un mensaje del tipo que espere un momento,
     # porque tarda un poco y eso. si no suda tampoco es nada importante
+    # sii, rollo: wait a few seconds... no?
     d.Plotgraph(user_data['graph'] , filename)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
