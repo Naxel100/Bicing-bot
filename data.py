@@ -26,21 +26,6 @@ def Graph(dist = 1000):
     return G
 
 
-def Nearest_station(G, coord):
-    first = True
-    for node in G.nodes:
-        coord1 = (node.lat, node.lon)
-        dist = haversine(coord, coord1)
-        if first:
-            min = dist
-            first = False
-            res = node
-        elif dist < min:
-            min = dist
-            res = node
-    return res.address
-
-
 def Plotgraph(G, filename):
     m_bcn = stm.StaticMap(1000, 1000)
 
@@ -122,6 +107,31 @@ def Route(G, coord1, coord2, filename):
     Gc = nx.compose(G, Gc)
     Shortest_Path = nx.dijkstra_path(Gc, start, finish)
     return Plotpath_and_calculate_time(Gc, Shortest_Path, filename)
+
+def Nearest_station(G, coord, filename):
+    first = True
+    for node in G.nodes:
+        coord1 = (node.lat, node.lon)
+        dist = haversine(coord, coord1)
+        if first:
+            min = dist
+            first = False
+            res = node
+        elif dist < min:
+            min = dist
+            res = node
+
+    m_bcn = stm.StaticMap(1000, 1000)
+    line = stm.Line(((coord[1], coord[0]), (res.lon, res.lat)), 'orange', 2)
+    marker1 = stm.CircleMarker((coord[1], coord[0]) , 'red', 3) #esto es el tamaño del punto
+    marker2 = stm.CircleMarker((res.lon, res.lat) , 'red', 3) #esto es el tamaño del punto
+    m_bcn.add_marker(marker1)
+    m_bcn.add_marker(marker2)
+    m_bcn.add_line(line)
+    image = m_bcn.render()
+    image.save(filename)
+    time = time_complete(haversine((coord[0], coord[1]), (res.lat, res.lon)) / 4)
+    return res.address, time
 
 '''
 def main():

@@ -38,7 +38,22 @@ def Graph_cuadra(dist = 1000):
     print("Graph created!")              # Chivato
     return G
 
-
+def Graph_supuestamente_aun_mas_rapidito(dist = 1000):
+    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
+    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
+    dist /= 1000
+    G = nx.Graph()
+    pivot = bicing[0]
+    v = sorted(list(bicing.itertuples()), key=lambda station: haversine((station.lat, station.lon),(pivot.lat, pivot.lon)))
+    for i in range(len(v)):
+        G.add_node(v[i])
+        j = i + 1
+        distance = haversine((v[i].lat, v[i].lon), (v[j].lat, v[j].lon))
+        while(j < len(v) and distance <= dist):
+            G.add_edge(v[i] , v[j], weight = distance)
+            j += 1
+    print("Graph done!")
+    return G
 
 def Components(G):
     print("This Graph has", nx.number_connected_components(G),"connected components")
@@ -68,8 +83,12 @@ def main():
     Gp = Graph_supuestamente_rapido(x)
     finish2 = time.time()
     print("el rapidito tarda:",finish2 - start2)
+    start3 = time.time()
+    Gq = Graph_supuestamente_aun_mas_rapidito(x)
+    finish3 = time.time()
+    print("el supuestamente mas rapidito tarda:", finish3 - start3)
     Plotgraph(G,'cuadra.png')
-    Plotgraph(Gp,'rapidito.png')
+    Plotgraph(Gq,'rapidito.png')
     #geolocator = Nominatim(user_agent="bicing_bot")
     #location1 = geolocator.geocode('Salvador Espriu, Mollet del Valles')
     #location2 = geolocator.geocode('Mar, Orihuela')
