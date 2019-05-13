@@ -1,0 +1,12 @@
+geographiclib==1.49
+geopy==1.19.0
+haversine==2.0.0
+jutge==2.1
+matplotlib==2.2.3
+networkx==2.1
+numpy==1.15.1
+numpydoc==0.8.0
+pandas==0.23.4
+pep8==1.7.1
+python-telegram-bot==11.1.0
+sympy==1.2
