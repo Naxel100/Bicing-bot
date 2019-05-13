@@ -1,3 +1,4 @@
+staticmap
 geographiclib==1.49
 geopy==1.19.0
 haversine==2.0.0
