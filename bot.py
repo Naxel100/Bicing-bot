@@ -1,6 +1,7 @@
 import telegram
 import os
 import data as d
+import networkx as nx
 from telegram.ext import Updater
 from geopy.geocoders import Nominatim
 from telegram.ext import CommandHandler, MessageHandler, Filters
@@ -37,12 +38,11 @@ def graph(bot, update, args, user_data):
 #por chat y se elimina del directorio
 def plotgraph(bot, update, user_data):
     id = str(update.message.chat_id)
-    filename = 'stations' + '_' + id + '.png'
     #este mensaje es solo pa ver lo chulo que queda el nombre del archivo
-    bot.send_message(chat_id=update.message.chat_id, text = filename)
+    bot.send_message(chat_id=update.message.chat_id, text = "Processing the map...🕗🕘🕙")
     # te molaria poner aqui un mensaje del tipo que espere un momento,
     # porque tarda un poco y eso. si no suda tampoco es nada importante
-    # sii, rollo: wait a few seconds... no?
+    filename = 'plotgraph' + '_' + id + '.png'
     d.Plotgraph(user_data['graph'] , filename)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
@@ -89,7 +89,8 @@ def addressesTOcoordinates(addresses, update, bot, user_data):
     try:
         location1 = geolocator.geocode(address1 + ', Barcelona')
         location2 = geolocator.geocode(address2 + ', Barcelona')
-        return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
+        if(location1 == location2): bot.send_message(chat_id=update.message.chat_id, text="Just don't move")
+        else: return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
     except:
         bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that some direction doesn't exist. Please try it again.")
 
@@ -98,6 +99,7 @@ def route(bot, update, args, user_data):
     coord1, coord2 = addressesTOcoordinates(addresses, update, bot, user_data)
     id = str(update.message.chat_id)
     filename = 'shortest_path' + '_' + id + '.png'
+    bot.send_message(chat_id=update.message.chat_id, text = "Processing the map...🕗🕘🕙")
     time = d.Route(user_data['graph'], coord1, coord2, filename)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
@@ -113,8 +115,16 @@ def nearest_station(bot, update, user_data, args):
     except:
         try : coord = user_data['coords']
         except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that your current location is not available. Send it to me and try it again")
-    n_station = d.Nearest_station(user_data['graph'], coord)
+    bot.send_message(chat_id=update.message.chat_id, text = "Processing...🕗🕘🕙")
+    id = str(update.message.chat_id)
+    filename = 'nearest_station' + '_' + id + '.png'
+    n_station, time = d.Nearest_station(user_data['graph'], coord, filename)
     bot.send_message(chat_id=update.message.chat_id, text = n_station)
+    id = str(update.message.chat_id)
+    bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
+    os.remove(filename)
+    time = time_output(time)
+    bot.send_message(chat_id=update.message.chat_id, text = time)
 
 
 def where(bot, update, user_data):
