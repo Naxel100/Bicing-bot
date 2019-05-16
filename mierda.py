@@ -43,7 +43,7 @@ def crear_matriz(bicing, dist):
     lon_max = bicing['lon'].max()
     sizex = int(haversine((lat_min, lon_min), (lat_max, lon_min)) // dist + 1)
     sizey = int(haversine((lat_min, lon_min), (lat_min, lon_max)) // dist + 1)
-
+    print(sizex, sizey)
     matrix = [[list() for j in range(sizey)] for i in range(sizex)]
     for st in bicing.itertuples():
         dpx = int(haversine((lat_min, st.lon),(st.lat,st.lon)) // dist)
@@ -70,6 +70,7 @@ def crear_grafo(M, dist):
     for i in range(verticales):
         for j in range(horizontales):
             for point in M[i][j]:
+                G.add_node(point)
                 for quadrant in possible_quadrants(M, i, j, verticales, horizontales):
                     for point2 in quadrant:
                         distance = haversine((point.lat, point.lon), (point2.lat, point2.lon))
@@ -132,9 +133,17 @@ def main():
     print("lineal:", sr / cont)
     '''
     x = read(int)
+    start1 = time.time()
+    Gp = Graph_supuestamente_rapido(x)
+    finish1 = time.time()
+    print("OK,",finish1-start1)
+    start2 = time.time()
     G = Graph_supuestamente_aun_mas_rapidito(x)
-    print("OK")
+    finish2 = time.time()
+    print("OK,",finish2-start2)
     print(list(G.nodes))
+    print(list(Gp.nodes))
+
     #Plotgraph(G,'cuadra.png')
     #Plotgraph(Gq,'rapidito.png')
     #geolocator = Nominatim(user_agent="bicing_bot")
