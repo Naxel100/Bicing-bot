@@ -42,17 +42,13 @@ def Graph_supuestamente_aun_mas_rapidito(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
     bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
+    lat_min = bicing['lat'].min()
+    lat_max = bicing['lat'].max()
+    lon_min = bicing['lon'].min()
+    lon_max = bicing['lon'].max()
+    print(lat_min)
     G = nx.Graph()
-    pivot = bicing[0]
-    v = sorted(list(bicing.itertuples()), key=lambda station: haversine((station.lat, station.lon),(pivot.lat, pivot.lon)))
-    for i in range(len(v)):
-        G.add_node(v[i])
-        j = i + 1
-        distance = haversine((v[i].lat, v[i].lon), (v[j].lat, v[j].lon))
-        while(j < len(v) and distance <= dist):
-            G.add_edge(v[i] , v[j], weight = distance)
-            j += 1
-    print("Graph done!")
+
     return G
 
 def Components(G):
