@@ -82,8 +82,13 @@ def Graph_supuestamente_aun_mas_rapidito(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
     bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
-    M = crear_matriz(bicing, dist)
-    return crear_grafo(M, dist)
+    if dist == 0:
+        G = nx.Graph()
+        G.add_nodes_from(bicing.itertuples())
+        return G
+    else:
+        M = crear_matriz(bicing, dist)
+        return crear_grafo(M, dist)
 
 def Components(G):
     print("This Graph has", nx.number_connected_components(G),"connected components")

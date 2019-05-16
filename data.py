@@ -39,9 +39,7 @@ def Plotgraph(G, filename):
 
     print("Image done!")                      #Chivato
     image = m_bcn.render()
-    image.save(filename)
-
-
+    image.save(filen
 def time_complete(t):
     h = int(t)
     d = (t - h) * 60
