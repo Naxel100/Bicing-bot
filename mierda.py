@@ -3,13 +3,15 @@ import time
 import pandas as pd
 import networkx as nx
 import staticmap as stm
+import matplotlib.pyplot as plt
 from geopy.geocoders import Nominatim
 from haversine import haversine
 from jutge import read, read_line
 
+url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
+bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
+
 def Graph_supuestamente_rapido(dist = 1000):
-    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
     G = nx.Graph()
     v = sorted(list(bicing.itertuples()), key=lambda station: station.lat)
@@ -23,8 +25,6 @@ def Graph_supuestamente_rapido(dist = 1000):
     return G
 
 def Graph_cuadra(dist = 1000):
-    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
     G = nx.Graph()
     for st in bicing.itertuples():
@@ -43,7 +43,7 @@ def crear_matriz(bicing, dist):
     lon_max = bicing['lon'].max()
     sizex = int(haversine((lat_min, lon_min), (lat_max, lon_min)) // dist + 1)
     sizey = int(haversine((lat_min, lon_min), (lat_min, lon_max)) // dist + 1)
-    print(sizex, sizey)
+    #print(sizex, sizey)
     matrix = [[list() for j in range(sizey)] for i in range(sizex)]
     for st in bicing.itertuples():
         dpx = int(haversine((lat_min, st.lon),(st.lat,st.lon)) // dist)
@@ -79,8 +79,6 @@ def crear_grafo(M, dist):
 
 
 def Graph_supuestamente_aun_mas_rapidito(dist = 1000):
-    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
     if dist == 0:
         G = nx.Graph()
@@ -109,28 +107,43 @@ def Plotgraph(G, filename):
     image.save(filename)
 
 def main():
-    '''
-    c = r = sr = cont = 0
-    for x in range(10, 1001, 10):
-        cont += 1
-        start1 = time.time()
-        G = Graph_cuadra(x)
-        finish1 = time.time()
-        c += finish1 - start1
-        print("1")
-        start2 = time.time()
-        Gp = Graph_supuestamente_rapido(x)
-        finish2 = time.time()
-        r += finish2 - start2
-        print("2")
-        start3 = time.time()
-        Gq = Graph_supuestamente_aun_mas_rapidito(x)
-        finish3 = time.time()
-        sr += finish3 - start3
-        print("3")
-    print("cuadratico:", c / cont)
-    print("raro:", r / cont)
-    print("lineal:", sr / cont)
+    vx = []
+    for i in range(2, 240, 6):
+        vx.append(i)
+    print(vx)
+
+    v1 = []
+    v2 = []
+    v3 = []
+    for x in range(2, 240, 6):
+        c = r = sr = 0
+        cont = 0
+        for y in range(2):
+            cont += 1
+            start1 = time.time()
+            G = Graph_cuadra(x)
+            finish1 = time.time()
+            c += finish1 - start1
+            print("1")
+            start2 = time.time()
+            Gp = Graph_supuestamente_rapido(x)
+            finish2 = time.time()
+            r += finish2 - start2
+            print("2")
+            start3 = time.time()
+            Gq = Graph_supuestamente_aun_mas_rapidito(x)
+            finish3 = time.time()
+            sr += finish3 - start3
+            print("3")
+        print("esto ha sio con x ==", x)
+        v1.append(c / cont)
+        v2.append(r / cont)
+        v3.append(sr / cont)
+    plt.plot(vx, v1, 'ro')
+    plt.plot(vx, v2, 'bs')
+    plt.plot(vx, v3, 'g^')
+    plt.axis([2, 240, 0, 1])
+    plt.show()
     '''
     x = read(int)
     start1 = time.time()
@@ -141,9 +154,7 @@ def main():
     G = Graph_supuestamente_aun_mas_rapidito(x)
     finish2 = time.time()
     print("OK,",finish2-start2)
-    print(list(G.nodes))
-    print(list(Gp.nodes))
-
+    '''
     #Plotgraph(G,'cuadra.png')
     #Plotgraph(Gq,'rapidito.png')
     #geolocator = Nominatim(user_agent="bicing_bot")
