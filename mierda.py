@@ -70,7 +70,6 @@ def crear_grafo(M, dist):
     for i in range(verticales):
         for j in range(horizontales):
             for point in M[i][j]:
-                G.add_node(point)
                 for quadrant in possible_quadrants(M, i, j, verticales, horizontales):
                     for point2 in quadrant:
                         distance = haversine((point.lat, point.lon), (point2.lat, point2.lon))
@@ -109,6 +108,7 @@ def Plotgraph(G, filename):
     image.save(filename)
 
 def main():
+    '''
     c = r = sr = cont = 0
     for x in range(10, 1001, 10):
         cont += 1
@@ -130,6 +130,11 @@ def main():
     print("cuadratico:", c / cont)
     print("raro:", r / cont)
     print("lineal:", sr / cont)
+    '''
+    x = read(int)
+    G = Graph_supuestamente_aun_mas_rapidito(x)
+    print("OK")
+    print(list(G.nodes))
     #Plotgraph(G,'cuadra.png')
     #Plotgraph(Gq,'rapidito.png')
     #geolocator = Nominatim(user_agent="bicing_bot")
