@@ -1,6 +1,7 @@
 import telegram
 import os
 import data as d
+import gif as gif
 import networkx as nx
 from telegram.ext import Updater
 from geopy.geocoders import Nominatim
@@ -12,6 +13,7 @@ def start(bot, update, user_data):
     username = update.message.chat.first_name
     bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nWhat can I do for you?" % username)
 
+
 def PutosCracks(bot, update):
     message = "Made by: \n" \
               "Àlex Ferrando de las Morenas \n" \
@@ -20,6 +22,7 @@ def PutosCracks(bot, update):
               "___________________________________________\n" \
               "Universitat Politècnica de Catalunya, 2019"
     bot.send_message(chat_id=update.message.chat_id, text = message)
+
 
 def graph(bot, update, args, user_data):
     if len(args) == 1:
@@ -32,24 +35,27 @@ def graph(bot, update, args, user_data):
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: 1000")
     else: bot.send_message(chat_id=update.message.chat_id, text="You should only introduce one distance")
 
-#d.Plotgraph crea una imagen con nombre filename, se manda esta imagen
-#por chat y se elimina del directorio
+
+
 def plotgraph(bot, update, user_data):
     id = str(update.message.chat_id)
     message_load = bot.send_message(chat_id=update.message.chat_id, text = "Processing the map...🕗🕘🕙")
     filename = 'plotgraph' + '_' + id + '.png'
     d.Plotgraph(user_data['graph'] , filename)
-    bot.delete_message(message_load.chat_id, message_load.message_id)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
+    bot.delete_message(message_load.chat_id, message_load.message_id)
     os.remove(filename)
+
 
 def nodes(bot, update, user_data):
     nodes = d.Nodes(user_data['graph'])
     bot.send_message(chat_id=update.message.chat_id, text="This Graph has: %d nodes" % nodes)
 
+
 def edges(bot, update, user_data):
     edges = d.Edges(user_data['graph'])
     bot.send_message(chat_id=update.message.chat_id, text="This Graph has: %d edges" % edges)
+
 
 def components(bot, update, user_data):
     components = d.Components(user_data['graph'])
@@ -62,12 +68,14 @@ def args_in_a_line(args):
         direction += str(arg) + ' '
     return direction
 
-def time_output(time):
+
+def output_time(time):
     message = 'Time from start to destination: '
     if time[0] != 0: message += "%d h " % time[0]
     if time[0] != 0 or time[1] != 0: message += "%d m " % time[1]
     message += "%d s" % time[2]
     return message
+
 
 def from_ubi_to_destination(address, update, bot, user_data):
     geolocator = Nominatim(user_agent = "bicing_bot")
@@ -76,6 +84,7 @@ def from_ubi_to_destination(address, update, bot, user_data):
     try: location1 = geolocator.geocode(address + ', Barcelona')
     except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that the direction given doesn't exist. Please try it again.")
     return (location1.latitude, location1.longitude), coord
+
 
 def addressesTOcoordinates(addresses, update, bot, user_data):
     geolocator = Nominatim(user_agent = "bicing_bot")
@@ -88,17 +97,27 @@ def addressesTOcoordinates(addresses, update, bot, user_data):
         else: return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
     except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that some direction doesn't exist. Please try it again.")
 
-def route(bot, update, args, user_data):
+
+def do_route(option, bot, update, args, user_data):
+    print(option)
     addresses = args_in_a_line(args)
     coord1, coord2 = addressesTOcoordinates(addresses, update, bot, user_data)
     id = str(update.message.chat_id)
     filename = 'shortest_path' + '_' + id + '.png'
     message_load = bot.send_message(chat_id=update.message.chat_id, text = "Processing the map...🕗🕘🕙")
-    time = d.Route(user_data['graph'], coord1, coord2, filename)
-    bot.delete_message(message_load.chat_id, message_load.message_id)
+    if option: time = d.Route1(user_data['graph'], coord1, coord2, filename)
+    else: time = d.Route2(user_data['graph'], coord1, coord2, filename)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
+    bot.delete_message(message_load.chat_id, message_load.message_id)
     os.remove(filename)
-    bot.send_message(chat_id=update.message.chat_id, text = time_output(time))
+    bot.send_message(chat_id=update.message.chat_id, text = output_time(time))
+
+
+def route(bot, update, args, user_data): do_route(1, bot, update, args, user_data)
+
+
+def fastest_route(bot, update, args, user_data): do_route(0, bot, update, args, user_data)
+
 
 def nearest_station(bot, update, user_data, args):
     geolocator = Nominatim(user_agent = "bicing_bot")
@@ -115,19 +134,21 @@ def nearest_station(bot, update, user_data, args):
     n_station, time = d.Nearest_station(user_data['graph'], coord, filename)
     bot.send_message(chat_id=update.message.chat_id, text = n_station)
     id = str(update.message.chat_id)
-    bot.delete_message(message_load.chat_id, message_load.message_id)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
+    bot.delete_message(message_load.chat_id, message_load.message_id)
     os.remove(filename)
-    time = time_output(time)
+    time = output_time(time)
     bot.send_message(chat_id=update.message.chat_id, text = time)
 
 
-def where(bot, update, user_data):
+def location(bot, update, user_data):
     user_data['coords'] = update.message.location.latitude, update.message.location.longitude
     coord = user_data['coords']
     print(coord)
 
 def unknown(bot, update):
+    animation = gif.random_gif()
+    bot.send_animation(chat_id=update.message.chat_id, animation = animation)
     bot.send_message(chat_id=update.message.chat_id, text="Sorry, I didn't understand that command 😅")
 
 TOKEN = open('token.txt').read().strip()
@@ -151,10 +172,12 @@ dispatcher.add_handler(CommandHandler('plotgraph', plotgraph, pass_user_data = T
 
 dispatcher.add_handler(CommandHandler('route', route, pass_args = True, pass_user_data = True))
 
+dispatcher.add_handler(CommandHandler('fastest_route', fastest_route, pass_args = True, pass_user_data = True))
+
 dispatcher.add_handler(CommandHandler('nearest_station', nearest_station, pass_user_data = True, pass_args = True))
 
 dispatcher.add_handler(MessageHandler(Filters.command, unknown))
 
-dispatcher.add_handler(MessageHandler(Filters.location, where, pass_user_data=True))
+dispatcher.add_handler(MessageHandler(Filters.location, location, pass_user_data=True))
 
 updater.start_polling()
