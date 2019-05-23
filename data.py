@@ -39,7 +39,8 @@ def Plotgraph(G, filename):
 
     print("Image done!")                      #Chivato
     image = m_bcn.render()
-    image.save(filen
+    image.save(filename)
+
 def time_complete(t):
     h = int(t)
     d = (t - h) * 60
@@ -92,12 +93,8 @@ def Route(G, coord1, coord2, filename):
     start = Pandas(lat = coord1[0] , lon = coord1[1])
     finish = Pandas(lat = coord2[0] , lon = coord2[1])
     G.add_nodes_from([start, finish])
-    #G.add_node(finish)
     Gc = nx.complement(G)
     G.remove_nodes_from([start, finish])
-    #G.remove_node(finish)
-
-    #este bucle modifica los pesos
     for edge in Gc.edges:
         distance = haversine((edge[0].lat, edge[0].lon), (edge[1].lat, edge[1].lon))
         Gc.add_edge(edge[0], edge[1], weight = 10/4 * distance)
@@ -106,7 +103,7 @@ def Route(G, coord1, coord2, filename):
     Shortest_Path = nx.dijkstra_path(Gc, start, finish)
     return Plotpath_and_calculate_time(Gc, Shortest_Path, filename)
 
-def Nearest_station(G, coord, filename):
+def Find_nearest_station(G, coord):
     first = True
     for node in G.nodes:
         coord1 = (node.lat, node.lon)
@@ -118,7 +115,11 @@ def Nearest_station(G, coord, filename):
         elif dist < min:
             min = dist
             res = node
+    return res;
 
+def Nearest_station(G, coord, filename):
+    n_station = Find_nearest_station(G, coord);
+    # Fraccionar !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     m_bcn = stm.StaticMap(1000, 1000)
     line = stm.Line(((coord[1], coord[0]), (res.lon, res.lat)), 'orange', 2)
     marker1 = stm.CircleMarker((coord[1], coord[0]) , 'red', 3) #esto es el tamaño del punto
@@ -128,6 +129,7 @@ def Nearest_station(G, coord, filename):
     m_bcn.add_line(line)
     image = m_bcn.render()
     image.save(filename)
+    # Fraccionar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
     time = time_complete(haversine((coord[0], coord[1]), (res.lat, res.lon)) / 4)
     return res.address, time
 

@@ -6,14 +6,12 @@ from telegram.ext import Updater
 from geopy.geocoders import Nominatim
 from telegram.ext import CommandHandler, MessageHandler, Filters
 
-#Añadido creación de grafo por defecto con dist = 1000
 def start(bot, update, user_data):
     G = d.Graph()
     user_data['graph'] = G
     username = update.message.chat.first_name
     bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nWhat can I do for you?" % username)
 
-#que fino willy
 def PutosCracks(bot, update):
     message = "Made by: \n" \
               "Àlex Ferrando de las Morenas \n" \
@@ -38,12 +36,10 @@ def graph(bot, update, args, user_data):
 #por chat y se elimina del directorio
 def plotgraph(bot, update, user_data):
     id = str(update.message.chat_id)
-    #este mensaje es solo pa ver lo chulo que queda el nombre del archivo
-    bot.send_message(chat_id=update.message.chat_id, text = "Processing the map...🕗🕘🕙")
-    # te molaria poner aqui un mensaje del tipo que espere un momento,
-    # porque tarda un poco y eso. si no suda tampoco es nada importante
+    message_load = bot.send_message(chat_id=update.message.chat_id, text = "Processing the map...🕗🕘🕙")
     filename = 'plotgraph' + '_' + id + '.png'
     d.Plotgraph(user_data['graph'] , filename)
+    bot.delete_message(message_load.chat_id, message_load.message_id)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
 
@@ -59,7 +55,7 @@ def components(bot, update, user_data):
     components = d.Components(user_data['graph'])
     bot.send_message(chat_id=update.message.chat_id, text="This Graph has: %d connected components" % components)
 
-#lo mismo que read_line pero mejor (puto jutge y Jordi Petit!)
+
 def args_in_a_line(args):
     direction = ''
     for arg in args:
@@ -73,7 +69,7 @@ def time_output(time):
     message += "%d s" % time[2]
     return message
 
-def from_ubi_to_coordinates(address, update, bot, user_data):
+def from_ubi_to_destination(address, update, bot, user_data):
     geolocator = Nominatim(user_agent = "bicing_bot")
     try : coord = user_data['coords']
     except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that your current location is not available. Send it to me and try it again")
@@ -84,27 +80,25 @@ def from_ubi_to_coordinates(address, update, bot, user_data):
 def addressesTOcoordinates(addresses, update, bot, user_data):
     geolocator = Nominatim(user_agent = "bicing_bot")
     try: address1, address2 = addresses.split(',')
-    #entra al except si no hay una coma en el mensaje, es decir, solo hay una dirección
-    except: return from_ubi_to_coordinates(addresses, update, bot, user_data)
+    except: return from_ubi_to_destination(addresses, update, bot, user_data)
     try:
         location1 = geolocator.geocode(address1 + ', Barcelona')
         location2 = geolocator.geocode(address2 + ', Barcelona')
         if(location1 == location2): bot.send_message(chat_id=update.message.chat_id, text="Just don't move")
         else: return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
-    except:
-        bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that some direction doesn't exist. Please try it again.")
+    except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that some direction doesn't exist. Please try it again.")
 
 def route(bot, update, args, user_data):
     addresses = args_in_a_line(args)
     coord1, coord2 = addressesTOcoordinates(addresses, update, bot, user_data)
     id = str(update.message.chat_id)
     filename = 'shortest_path' + '_' + id + '.png'
-    bot.send_message(chat_id=update.message.chat_id, text = "Processing the map...🕗🕘🕙")
+    message_load = bot.send_message(chat_id=update.message.chat_id, text = "Processing the map...🕗🕘🕙")
     time = d.Route(user_data['graph'], coord1, coord2, filename)
+    bot.delete_message(message_load.chat_id, message_load.message_id)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
-    message = time_output(time)
-    bot.send_message(chat_id=update.message.chat_id, text = message)
+    bot.send_message(chat_id=update.message.chat_id, text = time_output(time))
 
 def nearest_station(bot, update, user_data, args):
     geolocator = Nominatim(user_agent = "bicing_bot")
@@ -115,12 +109,13 @@ def nearest_station(bot, update, user_data, args):
     except:
         try : coord = user_data['coords']
         except: bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that your current location is not available. Send it to me and try it again")
-    bot.send_message(chat_id=update.message.chat_id, text = "Processing...🕗🕘🕙")
+    message_load = bot.send_message(chat_id=update.message.chat_id, text = "Processing...🕗🕘🕙")
     id = str(update.message.chat_id)
     filename = 'nearest_station' + '_' + id + '.png'
     n_station, time = d.Nearest_station(user_data['graph'], coord, filename)
     bot.send_message(chat_id=update.message.chat_id, text = n_station)
     id = str(update.message.chat_id)
+    bot.delete_message(message_load.chat_id, message_load.message_id)
     bot.send_photo(chat_id=update.message.chat_id, photo = open(filename, 'rb'))
     os.remove(filename)
     time = time_output(time)
