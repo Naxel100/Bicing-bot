@@ -117,20 +117,21 @@ def Find_nearest_station(G, coord):
             res = node
     return res;
 
-def Nearest_station(G, coord, filename):
-    n_station = Find_nearest_station(G, coord);
-    # Fraccionar !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+def Plotgraph_graph_to_nearest(n_station, coord):
     m_bcn = stm.StaticMap(1000, 1000)
-    line = stm.Line(((coord[1], coord[0]), (res.lon, res.lat)), 'orange', 2)
+    line = stm.Line(((coord[1], coord[0]), (n_station.lon, n_station.lat)), 'orange', 2)
     marker1 = stm.CircleMarker((coord[1], coord[0]) , 'red', 3) #esto es el tamaño del punto
-    marker2 = stm.CircleMarker((res.lon, res.lat) , 'red', 3) #esto es el tamaño del punto
+    marker2 = stm.CircleMarker((n_station.lon, n_station.lat) , 'red', 3) #esto es el tamaño del punto
     m_bcn.add_marker(marker1)
     m_bcn.add_marker(marker2)
     m_bcn.add_line(line)
     image = m_bcn.render()
     image.save(filename)
-    # Fraccionar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-    time = time_complete(haversine((coord[0], coord[1]), (res.lat, res.lon)) / 4)
+
+def Nearest_station(G, coord, filename):
+    n_station = Find_nearest_station(G, coord);
+    Plotgraph_graph_to_nearest(n_station, coord, filename)
+    time = time_complete(haversine((coord[0], coord[1]), (n_station.lat, n_station.lon)) / 4)
     return res.address, time
 
 '''
