@@ -37,10 +37,19 @@ def Graph_cuadra(dist = 1000):
     return G
 
 def crear_matriz(bicing, dist):
-    lat_min = bicing['lat'].min()
-    lat_max = bicing['lat'].max()
-    lon_min = bicing['lon'].min()
-    lon_max = bicing['lon'].max()
+    first = True
+    for st in bicing.itertuples():
+        if first:
+            lat_min = st.lat
+            lat_max = st.lat
+            lon_min = st.lon
+            lon_max = st.lon
+            first = False
+        else:
+            if st.lat < lat_min: lat_min = st.lat
+            elif st.lat > lat_max: lat_max = st.lat
+            if st.lon < lon_min: lon_min = st.lon
+            elif st.lon > lon_max: lon_max = st.lon
     sizex = int(haversine((lat_min, lon_min), (lat_max, lon_min)) // dist + 1)
     sizey = int(haversine((lat_min, lon_min), (lat_min, lon_max)) // dist + 1)
     #print(sizex, sizey)
@@ -108,14 +117,14 @@ def Plotgraph(G, filename):
 
 def main():
     vx = []
-    for i in range(2, 240, 6):
+    for i in range(2, 30):
         vx.append(i)
     print(vx)
 
     v1 = []
     v2 = []
     v3 = []
-    for x in range(2, 240, 6):
+    for x in range(2, 30):
         c = r = sr = 0
         cont = 0
         for y in range(2):
@@ -142,7 +151,7 @@ def main():
     plt.plot(vx, v1, 'ro')
     plt.plot(vx, v2, 'bs')
     plt.plot(vx, v3, 'g^')
-    plt.axis([2, 240, 0, 1])
+    plt.axis([2, 30, 0, 1])
     plt.show()
     '''
     x = read(int)
