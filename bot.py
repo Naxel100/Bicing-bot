@@ -99,6 +99,7 @@ def addressesTOcoordinates(addresses, update, bot, user_data):
 
 
 def do_route(option, bot, update, args, user_data):
+    print(option)
     addresses = args_in_a_line(args)
     coord1, coord2 = addressesTOcoordinates(addresses, update, bot, user_data)
     id = str(update.message.chat_id)

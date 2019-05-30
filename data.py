@@ -12,17 +12,6 @@ Pandas = cl.namedtuple('Pandas', 'lat lon')
 
 ''' ********************************************** Graph creation ********************************************** '''
 
-def crear_matriz(bicing, dist, sizex, sizey, lat_min, lon_min):
-    #print(sizex, sizey)
-    matrix = [[list() for j in range(sizey)] for i in range(sizex)]
-    for st in bicing.itertuples():
-        dpx = int(haversine((lat_min, st.lon),(st.lat,st.lon)) // dist)
-        dpy = int(haversine((st.lat, lon_min),(st.lat,st.lon)) // dist)
-        #print(dpx,dpy)
-        matrix[dpx][dpy].append(st)
-
-    return matrix
-
 def possible_quadrants(M, i, j, verticales ,horizontales):
     pos = [(M[i][j])]
     if i + 1 < verticales:
@@ -34,7 +23,7 @@ def possible_quadrants(M, i, j, verticales ,horizontales):
     return pos
 
 
-def crear_grafo(M, dist):
+def Create_Graph(M, dist):
     G = nx.Graph()
     verticales = len(M)
     horizontales = len(M[0])
@@ -48,55 +37,48 @@ def crear_grafo(M, dist):
                         if distance <= dist and point != point2: G.add_edge(point, point2, weight = distance)
     return G
 
-def Calcula_dimensiones(bicing, dist):
+
+def Bounding_box_coordinates(bicing, dist):
     first = True
-    lat_min = 0
-    lat_max = 0
-    lon_min = 0
-    lon_max = 0
     for st in bicing.itertuples():
         if first:
-            lat_min = st.lat
-            lat_max = st.lat
-            lon_min = st.lon
-            lon_max = st.lon
+            lat_min = lat_max = st.lat
+            lon_min = lon_max = st.lon
             first = False
         else:
             if st.lat < lat_min: lat_min = st.lat
             elif st.lat > lat_max: lat_max = st.lat
             if st.lon < lon_min: lon_min = st.lon
             elif st.lon > lon_max: lon_max = st.lon
+    return lat_min, lat_max, lon_min, lon_max
+
+
+def Create_matrix(bicing, dist):
+    lat_min, lat_max, lon_min, lon_max = Bounding_box_coordinates(bicing, dist)
     sizex = int(haversine((lat_min, lon_min), (lat_max, lon_min)) // dist + 1)
     sizey = int(haversine((lat_min, lon_min), (lat_min, lon_max)) // dist + 1)
-    return sizex, sizey, lat_min, lon_min
 
-def Graph_rapido_para_distacias_cortas(bicing, dist):
-    G = nx.Graph()
-    v = sorted(list(bicing.itertuples()), key=lambda station: station.lat)
-    for i in range(len(v)):
-        G.add_node(v[i])
-        j = i + 1
-        while(j < len(v) and v[j].lat - v[i].lat <= dist):
-            distance = haversine((v[i].lat, v[i].lon), (v[j].lat, v[j].lon))
-            if distance <= dist: G.add_edge(v[i] , v[j], weight = distance)
-            j += 1
-    return G
+    matrix = [[list() for j in range(sizey)] for i in range(sizex)]
+    for st in bicing.itertuples():
+        dpx = int(haversine((lat_min, st.lon),(st.lat,st.lon)) // dist)
+        dpy = int(haversine((st.lat, lon_min),(st.lat,st.lon)) // dist)
+        matrix[dpx][dpy].append(st)
 
-def Graph_lineal(bicing, dist, sizex, sizey, lat_min, lon_min):
-    M = crear_matriz(bicing, dist, sizex, sizey, lat_min, lon_min)
-    return crear_grafo(M, dist)
+    return matrix
 
-def Graph_supremo_nivel_9000(dist = 1000):
-    if dist == 0: return Graph_rapido_para_distacias_cortas(bicing, dist)
+
+def Graph(dist = 1000):
+    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
+    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     dist /= 1000
-    sizex, sizey, lat_min, lon_min = Calcula_dimensiones(bicing, dist)
-    casillas = sizex*sizey
-    if casillas > 160000:
-        return Graph_rapido_para_distacias_cortas(bicing, dist)
+    if dist == 0:
+        G = nx.Graph()
+        G.add_nodes_from(bicing.itertuples())
+        return G
     else:
-        print("casillas:",casillas, "con dist:", dist)
-        return Graph_lineal(bicing, dist, sizex, sizey, lat_min, lon_min)
-
+        M = Create_matrix(bicing, dist)
+        return Create_Graph(M, dist)
+    return G
 
 ''' ******************************************************************************************************** '''
 
