@@ -116,15 +116,18 @@ def Plotgraph(G, filename):
     image.save(filename)
 
 def main():
+    inicio = 0
+    fin = 5000
+    incremento = 100
     vx = []
-    for i in range(1, 5000, 20):
+    for i in range(inicio, fin, incremento):
         vx.append(i)
     print(vx)
 
     #v1 = []
     #v2 = []
     v3 = []
-    for x in range(1, 5000, 20):
+    for x in range(inicio, fin, incremento):
         c = 0
         r = 0
         sr = 0
@@ -156,11 +159,11 @@ def main():
     for i in range(1, len(v3)-1):
         dist_actual = v3[i]-v3[i-1]
         if dist_actual > 0.05:
-            print(i*20)
+            print(i*100)
     #plt.plot(vx, v1, 'ro')
     #plt.plot(vx, v2, 'bs')
     plt.plot(vx, v3, 'g^')
-    plt.axis([0, 5000, 0, 1])
+    plt.axis([inicio, fin, 0, 1])
     plt.show()
     '''
     x = read(int)
