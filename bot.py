@@ -8,7 +8,9 @@ from geopy.geocoders import Nominatim
 from telegram.ext import CommandHandler, MessageHandler, Filters
 
 def start(bot, update, user_data):
-    G = d.Graph()
+    print("puta")
+    G = d.Graph_supremo_nivel_9000()
+    print("hola")
     user_data['graph'] = G
     username = update.message.chat.first_name
     bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nWhat can I do for you?" % username)
@@ -26,11 +28,12 @@ def PutosCracks(bot, update):
 
 def graph(bot, update, args, user_data):
     if len(args) == 1:
-        G = d.Graph(int(args[0]))
+        G = d.Graph_supremo_nivel_9000(int(args[0]))
+        print("hola")
         user_data['graph'] = G
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: %s" % args[0])
     elif len(args) == 0:
-        G = d.Graph()
+        G = d.Graph_supremo_nivel_9000()
         user_data['graph'] = G
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: 1000")
     else: bot.send_message(chat_id=update.message.chat_id, text="You should only introduce one distance")

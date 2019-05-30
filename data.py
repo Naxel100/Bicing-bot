@@ -48,24 +48,21 @@ def crear_grafo(M, dist):
                         if distance <= dist and point != point2: G.add_edge(point, point2, weight = distance)
     return G
 
-def Calcula_dimensiones(bicing, dist):
+def dim(bicing, dist):
     first = True
-    lat_min = 0
-    lat_max = 0
-    lon_min = 0
-    lon_max = 0
+    print("alexxxx")
     for st in bicing.itertuples():
         if first:
-            lat_min = st.lat
-            lat_max = st.lat
-            lon_min = st.lon
-            lon_max = st.lon
+            print("first")
+            lat_min = lat_max = st.lat
+            lon_min = lon_max = st.lon
             first = False
         else:
             if st.lat < lat_min: lat_min = st.lat
             elif st.lat > lat_max: lat_max = st.lat
             if st.lon < lon_min: lon_min = st.lon
             elif st.lon > lon_max: lon_max = st.lon
+    print("ii")
     sizex = int(haversine((lat_min, lon_min), (lat_max, lon_min)) // dist + 1)
     sizey = int(haversine((lat_min, lon_min), (lat_min, lon_max)) // dist + 1)
     return sizex, sizey, lat_min, lon_min
@@ -87,10 +84,14 @@ def Graph_lineal(bicing, dist, sizex, sizey, lat_min, lon_min):
     return crear_grafo(M, dist)
 
 def Graph_supremo_nivel_9000(dist = 1000):
+    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
+    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     if dist == 0: return Graph_rapido_para_distacias_cortas(bicing, dist)
     dist /= 1000
-    sizex, sizey, lat_min, lon_min = Calcula_dimensiones(bicing, dist)
+    print("hooooo")
+    sizex, sizey, lat_min, lon_min = dim(bicing, dist)
     casillas = sizex*sizey
+    print(casillas)
     if casillas > 160000:
         return Graph_rapido_para_distacias_cortas(bicing, dist)
     else:
