@@ -102,7 +102,6 @@ def addressesTOcoordinates(addresses, update, bot, user_data):
 
 
 def do_route(option, bot, update, args, user_data):
-    print(option)
     addresses = args_in_a_line(args)
     coord1, coord2 = addressesTOcoordinates(addresses, update, bot, user_data)
     id = str(update.message.chat_id)
@@ -147,7 +146,8 @@ def nearest_station(bot, update, user_data, args):
 def location(bot, update, user_data):
     user_data['coords'] = update.message.location.latitude, update.message.location.longitude
     coord = user_data['coords']
-    print(coord)
+    message = gif.random_location_message()
+    bot.send_message(chat_id=update.message.chat_id, text=message)
 
 def unknown(bot, update):
     animation = gif.random_gif()
