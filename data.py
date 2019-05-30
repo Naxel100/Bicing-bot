@@ -37,20 +37,10 @@ def Create_Graph(M, dist):
                         if distance <= dist and point != point2: G.add_edge(point, point2, weight = distance)
     return G
 
-<<<<<<< HEAD
-
-def Bounding_box_coordinates(bicing, dist):
-    first = True
-    for st in bicing.itertuples():
-        if first:
-=======
 def dim(bicing, dist):
     first = True
-    print("alexxxx")
     for st in bicing.itertuples():
         if first:
-            print("first")
->>>>>>> b3cb8dd419f36dbf776256a9e827eee1399b83df
             lat_min = lat_max = st.lat
             lon_min = lon_max = st.lon
             first = False
@@ -59,18 +49,12 @@ def dim(bicing, dist):
             elif st.lat > lat_max: lat_max = st.lat
             if st.lon < lon_min: lon_min = st.lon
             elif st.lon > lon_max: lon_max = st.lon
-<<<<<<< HEAD
-    return lat_min, lat_max, lon_min, lon_max
-
-
-def Create_matrix(bicing, dist):
-    lat_min, lat_max, lon_min, lon_max = Bounding_box_coordinates(bicing, dist)
-=======
-    print("ii")
->>>>>>> b3cb8dd419f36dbf776256a9e827eee1399b83df
     sizex = int(haversine((lat_min, lon_min), (lat_max, lon_min)) // dist + 1)
     sizey = int(haversine((lat_min, lon_min), (lat_min, lon_max)) // dist + 1)
+    return sizex, sizey, lat_min, lon_min
 
+
+def Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min):
     matrix = [[list() for j in range(sizey)] for i in range(sizex)]
     for st in bicing.itertuples():
         dpx = int(haversine((lat_min, st.lon),(st.lat,st.lon)) // dist)
@@ -79,33 +63,32 @@ def Create_matrix(bicing, dist):
 
     return matrix
 
+def Graph_rapido_para_distacias_cortas(bicing, dist):
+    G = nx.Graph()
+    v = sorted(list(bicing.itertuples()), key=lambda station: station.lat)
+    for i in range(len(v)):
+        G.add_node(v[i])
+        j = i + 1
+        while(j < len(v) and v[j].lat - v[i].lat <= dist):
+            distance = haversine((v[i].lat, v[i].lon), (v[j].lat, v[j].lon))
+            if distance <= dist: G.add_edge(v[i] , v[j], weight = distance)
+            j += 1
+    return G
 
-<<<<<<< HEAD
-def Graph(dist = 1000):
-    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
-    dist /= 1000
-    if dist == 0:
-        G = nx.Graph()
-        G.add_nodes_from(bicing.itertuples())
-        return G
-=======
+
+
 def Graph_supremo_nivel_9000(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
     bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
     if dist == 0: return Graph_rapido_para_distacias_cortas(bicing, dist)
     dist /= 1000
-    print("hooooo")
     sizex, sizey, lat_min, lon_min = dim(bicing, dist)
     casillas = sizex*sizey
-    print(casillas)
     if casillas > 160000:
         return Graph_rapido_para_distacias_cortas(bicing, dist)
->>>>>>> b3cb8dd419f36dbf776256a9e827eee1399b83df
     else:
-        M = Create_matrix(bicing, dist)
+        M = Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min)
         return Create_Graph(M, dist)
-    return G
 
 ''' ******************************************************************************************************** '''
 
