@@ -87,10 +87,8 @@ You can observe the efficiency of both algorithm here below:
 * **Green** - *Algorihtm1* - avoiding empty matrix boxes
 * **Blue** - *Algorithm2* - 
 
-Little distances:
+**Little distances:**
 
 ![efficieny2.png](efficieny2.png)
-
-Big distances:
-
+**Big distances:**
 ![efficieny.png](efficieny.png)
