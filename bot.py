@@ -3,17 +3,14 @@ import os
 import data as d
 import gif as gif
 import networkx as nx
-from telegram.ext import Updater
 from geopy.geocoders import Nominatim
-from telegram.ext import CommandHandler, MessageHandler, Filters
+from telegram.ext import CommandHandler, MessageHandler, Filters, Updater
 
 def start(bot, update, user_data):
-    print("puta")
-    G = d.Graph_supremo_nivel_9000()
-    print("hola")
+    G = d.Graph()
     user_data['graph'] = G
     username = update.message.chat.first_name
-    bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nWhat can I do for you?" % username)
+    bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nMy mission is to help you to move throughout Barcelona by bicing. Remember, if you're lost just ask for   /help.😄😄\n" % username)
 
 
 def PutosCracks(bot, update):
@@ -28,12 +25,12 @@ def PutosCracks(bot, update):
 
 def graph(bot, update, args, user_data):
     if len(args) == 1:
-        G = d.Graph_supremo_nivel_9000(int(args[0]))
+        G = d.Graph(int(args[0]))
         print("hola")
         user_data['graph'] = G
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: %s" % args[0])
     elif len(args) == 0:
-        G = d.Graph_supremo_nivel_9000()
+        G = d.Graph()
         user_data['graph'] = G
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: 1000")
     else: bot.send_message(chat_id=update.message.chat_id, text="You should only introduce one distance")
@@ -144,6 +141,16 @@ def nearest_station(bot, update, user_data, args):
     bot.send_message(chat_id=update.message.chat_id, text = time)
 
 
+def help(bot, update, user_data):
+    message = "That's what I can do for you: \n\n" \
+              " /graph ```<distance>```: I will create a graph with the given distance. If you don't specify any distance, I'll do it with distance 1000.\n\n" \
+              " /authors:\n\n" \
+              " /\n" \
+              "___________________________________________\n" \
+              "Universitat Politècnica de Catalunya, 2019"
+    bot.send_message(chat_id=update.message.chat_id, text="That's what I can do for you:\n\n/start: Starts the bot and creates a graph of distance 1000.\n/graph *<distance>*: I will create a graph wiht the given distance. If yo don't specify any distance, I'll do it with distance 1000.\n/route *_<address1>_ <address2>*: I'll tell you how to arrive from address1 to address2, navigating through the graph and just cycling once. *Remark:* if you only indicate the final address, I'll display the route from your current location. _Make sure you've send it to me.😜\n/fastest_route *_<address1>_ <address2>*: It's like the route command, but I'll let you cycle more than once in order to show you the real fastest route.🚀🚀.\n/authors: I'll tell you the authos beyond this masterpiece.😎.\n/nodes: Prints the node's graph number.\n/edges: Prints the edges' graph number.\n/components: Prints the connected components' graph number.\n/nearest_station: I'll show you the nearest station to your location\n/plotgraph: Sends you an image of the graph.\n/help: Sounds metaforical.🤔🤔", parse_mode='Markdown')
+
+
 def location(bot, update, user_data):
     user_data['coords'] = update.message.location.latitude, update.message.location.longitude
     coord = user_data['coords']
@@ -179,6 +186,8 @@ dispatcher.add_handler(CommandHandler('route', route, pass_args = True, pass_use
 dispatcher.add_handler(CommandHandler('fastest_route', fastest_route, pass_args = True, pass_user_data = True))
 
 dispatcher.add_handler(CommandHandler('nearest_station', nearest_station, pass_user_data = True, pass_args = True))
+
+dispatcher.add_handler(CommandHandler('help', help, pass_user_data = True))
 
 dispatcher.add_handler(MessageHandler(Filters.command, unknown))
 

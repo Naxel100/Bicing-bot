@@ -12,7 +12,7 @@ Pandas = cl.namedtuple('Pandas', 'lat lon')
 
 ''' ********************************************** Graph creation ********************************************** '''
 
-def possible_quadrants(M, i, j, verticales ,horizontales):
+def Possible_quadrants(M, i, j, verticales ,horizontales):
     pos = [(M[i][j])]
     if i + 1 < verticales:
         pos.append(M[i + 1][j])
@@ -23,7 +23,7 @@ def possible_quadrants(M, i, j, verticales ,horizontales):
     return pos
 
 
-def Create_Graph(M, dist):
+def Create_linear_Graph(M, dist):
     G = nx.Graph()
     verticales = len(M)
     horizontales = len(M[0])
@@ -31,13 +31,13 @@ def Create_Graph(M, dist):
         for j in range(horizontales):
             for point in M[i][j]:
                 G.add_node(point)
-                for quadrant in possible_quadrants(M, i, j, verticales, horizontales):
+                for quadrant in Possible_quadrants(M, i, j, verticales, horizontales):
                     for point2 in quadrant:
                         distance = haversine((point.lat, point.lon), (point2.lat, point2.lon))
                         if distance <= dist and point != point2: G.add_edge(point, point2, weight = distance)
     return G
 
-def dim(bicing, dist):
+def Bbox_dimensions(bicing, dist):
     first = True
     for st in bicing.itertuples():
         if first:
@@ -63,7 +63,7 @@ def Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min):
 
     return matrix
 
-def Graph_rapido_para_distacias_cortas(bicing, dist):
+def Create_by_sort_Graph(bicing, dist):
     G = nx.Graph()
     v = sorted(list(bicing.itertuples()), key=lambda station: station.lat)
     for i in range(len(v)):
@@ -76,19 +76,16 @@ def Graph_rapido_para_distacias_cortas(bicing, dist):
     return G
 
 
-
-def Graph_supremo_nivel_9000(dist = 1000):
+def Graph(dist = 1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
     bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
-    if dist == 0: return Graph_rapido_para_distacias_cortas(bicing, dist)
+    if dist == 0: return Short_distance_Graph(bicing, dist)
     dist /= 1000
-    sizex, sizey, lat_min, lon_min = dim(bicing, dist)
-    casillas = sizex*sizey
-    if casillas > 160000:
-        return Graph_rapido_para_distacias_cortas(bicing, dist)
+    sizex, sizey, lat_min, lon_min = Bbox_dimensions(bicing, dist)
+    if sizex*sizey > 160000 or sizex*sizey < 7: return Create_by_sort_Graph(bicing, dist)
     else:
         M = Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min)
-        return Create_Graph(M, dist)
+        return Create_linear_Graph(M, dist)
 
 ''' ******************************************************************************************************** '''
 
@@ -215,22 +212,3 @@ def Nearest_station(G, coord, filename):
     Plotgraph_graph_to_nearest(n_station, coord, filename)
     time = time_complete(haversine((coord[0], coord[1]), (n_station.lat, n_station.lon)) / 4)
     return res.address, time
-
-'''
-def main():
-    print("Introduce graph's distance: ", end = '')
-    G = Graph(read(int))
-    action = read(str)
-    while action is not None:
-        if action == "graph":
-            G = Graph(read(int))
-        elif action == "plotgraph": Plotgraph(G,'stations.png')
-        elif action == "components": Components(G)
-        elif action == "nodes": Nodes(G)
-        elif action == "edges": Edges(G)
-        elif action == "route":
-            addresses = read_line()
-            Route(G, addresses)
-        action = read(str)
-main()
-'''
