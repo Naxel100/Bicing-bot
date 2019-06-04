@@ -89,8 +89,8 @@ You can observe the efficiency of both algorithm here below:
 
 Little distances:
 
-![efficiency2.png](efficiency.png)
+![efficiency2.png](efficiency2.png)
 
 Big distances:
 
-![efficiency.png](efficiency.png)
+![efficieny.png](efficieny.png)
