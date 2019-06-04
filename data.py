@@ -82,7 +82,8 @@ def Graph(dist = 1000):
     if dist == 0: return Short_distance_Graph(bicing, dist)
     dist /= 1000
     sizex, sizey, lat_min, lon_min = Bbox_dimensions(bicing, dist)
-    if sizex*sizey > 160000 or sizex*sizey < 7: return Create_by_sort_Graph(bicing, dist)
+    print(sizex*sizey)
+    if sizex*sizey > 661500 or sizex*sizey < 7: return Create_by_sort_Graph(bicing, dist)
     else:
         M = Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min)
         return Create_linear_Graph(M, dist)
@@ -127,6 +128,7 @@ def Edges(G):
 def Plotpath_and_calculate_time(G, Path, filename):
         m_bcn = stm.StaticMap(1000, 1000)
         time = 0
+        color = 'green'
         for i in range(len(Path) - 1):
             node1, node2 = Path[i], Path[i + 1]
             distance = haversine((node1.lat, node1.lon), (node2.lat, node2.lon))
@@ -137,8 +139,9 @@ def Plotpath_and_calculate_time(G, Path, filename):
                 time += distance / 4
                 line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'orange', 2)
 
-            marker1 = stm.CircleMarker((node1.lon, node1.lat) , 'red', 3) #esto es el tamaño del punto
-            marker2 = stm.CircleMarker((node2.lon, node2.lat) , 'red', 3) #esto es el tamaño del punto
+            marker1 = stm.CircleMarker((node1.lon, node1.lat) , color, 5) #esto es el tamaño del punto
+            color = 'red'
+            marker2 = stm.CircleMarker((node2.lon, node2.lat) , color, 5) #esto es el tamaño del punto
             m_bcn.add_marker(marker1)
             m_bcn.add_marker(marker2)
             m_bcn.add_line(line)
@@ -199,8 +202,8 @@ def Find_nearest_station(G, coord):
 def Plotgraph_graph_to_nearest(n_station, coord):
     m_bcn = stm.StaticMap(1000, 1000)
     line = stm.Line(((coord[1], coord[0]), (n_station.lon, n_station.lat)), 'orange', 2)
-    marker1 = stm.CircleMarker((coord[1], coord[0]) , 'red', 3) #esto es el tamaño del punto
-    marker2 = stm.CircleMarker((n_station.lon, n_station.lat) , 'red', 3) #esto es el tamaño del punto
+    marker1 = stm.CircleMarker((coord[1], coord[0]) , 'green', 5) #esto es el tamaño del punto
+    marker2 = stm.CircleMarker((n_station.lon, n_station.lat) , 'red', 5) #esto es el tamaño del punto
     m_bcn.add_marker(marker1)
     m_bcn.add_marker(marker2)
     m_bcn.add_line(line)
