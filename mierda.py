@@ -143,9 +143,9 @@ def Plotgraph(G, filename):
     image.save(filename)
 
 def main():
-    inicio = 2
-    fin = 203
-    incremento = 10
+    inicio = 3
+    fin = 30
+    incremento = 1
     vx = []
     for i in range(inicio, fin, incremento):
         vx.append(i)
