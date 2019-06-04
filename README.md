@@ -80,3 +80,17 @@ When distances are little, or approximately a third of the graph total size, fir
 
 In order to prevent this situation a second algorithm has been implemented O(n\*sqrt(n)). It sorts the stations by x-axis position and compares the distances to a given station st if an only if the distance in the x-axis is smaller than the given distance. The criteria to sort by x-axis instead of sorting by y-axis was the form of Barcelona. In this way the algorithm is little faster.
 
+
+You can observe the efficiency of both algorithm here below:
+
+* **Red** - *Algorithm1* - accesing all the matrix boxes
+* **Green** - *Algorihtm1* - avoiding empty matrix boxes
+* **Blue** - *Algorithm2* - 
+
+Little distances:
+
+![efficiency2.png](efficiency.png)
+
+Big distances:
+
+![efficiency.png](efficiency.png)
