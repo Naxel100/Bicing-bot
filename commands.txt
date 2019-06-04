@@ -1,0 +1,11 @@
+help - Full commands description
+graph - Creates a graph whith the given distance
+route - Calculates a route between two points
+fastest_route - A route between two points
+authors - Displays info about the bot creators
+nearest_station - Nearest bicing station
+distribute - Calculate bike moves with the truck
+edges - Prints the number of edges in the graph
+nodes - Prints the number of nodes in the graph
+components - Number of connected components
+plotgraph - Sends a picture of the actual graph
