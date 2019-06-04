@@ -6,12 +6,13 @@ import staticmap as stm
 import matplotlib.pyplot as plt
 from geopy.geocoders import Nominatim
 from haversine import haversine
+import collections as cl
 from jutge import read, read_line
 
 url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
 bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
 
-def Graph_supuestamente_rapido(bicing, dist):
+def Graph_supuestamente_rapido(dist):
     G = nx.Graph()
     v = sorted(list(bicing.itertuples()), key=lambda station: station.lat)
     for i in range(len(v)):
@@ -66,16 +67,10 @@ def Graph_supuestamente_aun_mas_rapidito(bicing, dist, sizex, sizey, lat_min, lo
 
 def Calcula_dimensiones(bicing, dist):
     first = True
-    lat_min = 0
-    lat_max = 0
-    lon_min = 0
-    lon_max = 0
     for st in bicing.itertuples():
         if first:
-            lat_min = st.lat
-            lat_max = st.lat
-            lon_min = st.lon
-            lon_max = st.lon
+            lat_min = lat_max = st.lat
+            lon_min = lon_max = st.lon
             first = False
         else:
             if st.lat < lat_min: lat_min = st.lat
@@ -87,15 +82,47 @@ def Calcula_dimensiones(bicing, dist):
     return sizex, sizey, lat_min, lon_min
 
 def Graph_supremo_nivel_9000(dist = 1000):
-    if dist == 0: return Graph_supuestamente_rapido(bicing, dist)
+    if dist == 0: return Graph_supuestamente_rapido(dist)
     dist /= 1000
     sizex, sizey, lat_min, lon_min = Calcula_dimensiones(bicing, dist)
-    casillas = sizex*sizey
-    if casillas > 160000:
-        return Graph_supuestamente_rapido(bicing, dist)
-    else:
-        print("casillas:",casillas, "con dist:", dist)
-        return Graph_supuestamente_aun_mas_rapidito(bicing, dist, sizex, sizey, lat_min, lon_min)
+    #casillas = sizex*sizey
+    #if casillas > 160000:
+    #    return Graph_supuestamente_rapido(bicing, dist)
+    #else:
+    #    print("casillas:",casillas, "con dist:", dist)
+    return Graph_supuestamente_aun_mas_rapidito(bicing, dist, sizex, sizey, lat_min, lon_min)
+
+def crear_aristas(G, bicing, M, dist):
+    verticales = len(M)
+    horizontales = len(M[0])
+    for point in G.nodes():
+        for quadrant in possible_quadrants(M, G.nodes[point]['pos'][0], G.nodes[point]['pos'][1], verticales, horizontales):
+            for point2 in quadrant:
+                distance = haversine((point.lat, point.lon), (point2.lat, point2.lon))
+                if distance <= dist and point != point2: G.add_edge(point, point2, weight = distance)
+    return G
+
+def crear_matriz2(bicing, dist, sizex, sizey, lat_min, lon_min):
+    G = nx.Graph()
+    matrix = [[list() for j in range(sizey)] for i in range(sizex)]
+    for st in bicing.itertuples():
+        dpx = int(haversine((lat_min, st.lon),(st.lat,st.lon)) // dist)
+        dpy = int(haversine((st.lat, lon_min),(st.lat,st.lon)) // dist)
+        matrix[dpx][dpy].append(st)
+        G.add_node(st)
+        G.nodes[st]['pos'] = (dpx, dpy)
+    return matrix, G
+
+def Graph_supuestamente_aun_mas_rapidito2(bicing, dist, sizex, sizey, lat_min, lon_min):
+    M, G = crear_matriz2(bicing, dist, sizex, sizey, lat_min, lon_min)
+    crear_aristas(G, bicing, M, dist)
+    return G
+
+def Graph_supremo_nivel_10000(dist = 1000):
+    dist /= 1000
+    sizex, sizey, lat_min, lon_min = Calcula_dimensiones(bicing, dist)
+    if(dist > 5): print(sizex*sizey)
+    return Graph_supuestamente_aun_mas_rapidito2(bicing, dist, sizex, sizey, lat_min, lon_min)
 
 
 def Components(G):
@@ -116,53 +143,57 @@ def Plotgraph(G, filename):
     image.save(filename)
 
 def main():
-    inicio = 0
-    fin = 5000
-    incremento = 100
+    inicio = 2
+    fin = 203
+    incremento = 10
     vx = []
     for i in range(inicio, fin, incremento):
         vx.append(i)
     print(vx)
 
-    #v1 = []
-    #v2 = []
+    v1 = []
+    v2 = []
     v3 = []
+    v4 = []
     for x in range(inicio, fin, incremento):
         c = 0
         r = 0
         sr = 0
+        sr2 = 0
         cont = 0
-        for y in range(2):
+        for y in range(1):
             cont += 1
-            '''
-            start1 = time.time()
+            '''start1 = time.time()
             G = Graph_cuadra(x)
             finish1 = time.time()
             c += finish1 - start1
-            print("1")
+            print("1")'''
             start2 = time.time()
             Gp = Graph_supuestamente_rapido(x)
             finish2 = time.time()
             r += finish2 - start2
             print("2")
-            '''
             start3 = time.time()
             Gq = Graph_supremo_nivel_9000(x)
             finish3 = time.time()
             sr += finish3 - start3
             print("3")
+            if r <= sr:
+                print(r, sr, x)
+            start4 = time.time()
+            Gq = Graph_supremo_nivel_10000(x)
+            finish4 = time.time()
+            sr2 += finish4 - start4
+            print('4')
         print("esto ha sio con x ==", x)
         #v1.append(c / cont)
-        #v2.append(r / cont)
+        v2.append(r / cont)
         v3.append(sr / cont)
-    print("Puntos malos:")
-    for i in range(1, len(v3)-1):
-        dist_actual = v3[i]-v3[i-1]
-        if dist_actual > 0.05:
-            print(i*100)
+        v4.append(sr2 / cont)
     #plt.plot(vx, v1, 'ro')
-    #plt.plot(vx, v2, 'bs')
+    plt.plot(vx, v2, 'bs')
     plt.plot(vx, v3, 'g^')
+    plt.plot(vx, v4, 'ro')
     plt.axis([inicio, fin, 0, 1])
     plt.show()
     '''
