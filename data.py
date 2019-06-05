@@ -162,13 +162,13 @@ def distribute(G_bueno, requiredBikes, requiredDocks):
 
     except nx.NetworkXUnfeasible:
         err = True
-        return err, 1
+        return 1, "malo", err
         '''
         "No solution could be found"
         '''
     except:
         err = True
-        return err, 2
+        return 2, "malisimo", err
         '''
         "***************************************"
         "*** Fatal error: Incorrect graph model "
@@ -195,7 +195,6 @@ def distribute(G_bueno, requiredBikes, requiredDocks):
                         Max_cost = cost
                     elif cost[0] > Max_cost[0]:
                         Max_cost = cost
-                    print(Max_cost[0])
         return total_km, Max_cost, err
 
 def time_complete(t):
