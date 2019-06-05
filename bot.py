@@ -26,7 +26,6 @@ def PutosCracks(bot, update):
 def graph(bot, update, args, user_data):
     if len(args) == 1:
         G = d.Graph(int(args[0]))
-        print("hola")
         user_data['graph'] = G
         bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: %s" % args[0])
     elif len(args) == 0:
@@ -141,6 +140,38 @@ def nearest_station(bot, update, user_data, args):
     bot.send_message(chat_id=update.message.chat_id, text = time)
 
 
+def distribute(bot, update, args, user_data):
+    argerror = False
+    if len(args) != 2:
+        argerror = True
+    elif int(args[0]) < 0 or int(args[1]) < 0:
+        argerror = True
+    if argerror:
+        bot.send_message(chat_id=update.message.chat_id, text = "You have to introduce 2 positive numbers next to the command:\nThe number of bikes and the number of docks")
+    else:
+        requiredBikes = int(args[0])
+        requiredDocks = int(args[1])
+        '''
+        If the variable error takes True as a value, the variable
+        flowCost will indicate which error happened during the calculus
+        of the distribution (1 means that it's imposible to guarantee those
+        conditions and 2 means that a fatal error ocurred, which is
+        a really bad thing).
+        '''
+        flowCost, biggest_cost, error= d.distribute(user_data['graph'], requiredBikes, requiredDocks)
+        if error and flowCost == 1:
+            bot.send_message(chat_id=update.message.chat_id, text = "There's no possible solution for this conditions")
+        elif error and flowCost == 2:
+            bot.send_message(chat_id=update.message.chat_id, text = "💣💣💣 Fatal Error: Incorrect graph model! 💣💣💣")
+        else:
+            message = "The total cost of transferring bikes is:\n" + \
+                       str(int((flowCost*1000))/1000) + " km.\n" \
+                      "The biggest cost move is:\n" + \
+                       str(int((biggest_cost[0]*1000))/1000)+ " km*bikes, between stations " + str(biggest_cost[1]) + " and " + str(biggest_cost[2])
+            bot.send_message(chat_id=update.message.chat_id, text = message)
+
+
+
 def help(bot, update, user_data):
     message = "That's what I can do for you: \n\n" \
               " /graph ```<distance>```: I will create a graph with the given distance. If you don't specify any distance, I'll do it with distance 1000.\n\n" \
@@ -186,6 +217,8 @@ dispatcher.add_handler(CommandHandler('route', route, pass_args = True, pass_use
 dispatcher.add_handler(CommandHandler('fastest_route', fastest_route, pass_args = True, pass_user_data = True))
 
 dispatcher.add_handler(CommandHandler('nearest_station', nearest_station, pass_user_data = True, pass_args = True))
+
+dispatcher.add_handler(CommandHandler('distribute', distribute, pass_args = True, pass_user_data = True))
 
 dispatcher.add_handler(CommandHandler('help', help, pass_user_data = True))
 

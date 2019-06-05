@@ -5,7 +5,6 @@ import staticmap as stm
 import collections as cl
 from geopy.geocoders import Nominatim
 from haversine import haversine
-from jutge import read, read_line
 
 Pandas = cl.namedtuple('Pandas', 'lat lon')
 
@@ -104,6 +103,100 @@ def Plotgraph(G, filename):
     image = m_bcn.render()
     image.save(filename)
 
+#Puts all the indexes from the Nodes in the graph G in a list
+def index_in_a_list(G):
+    list = []
+    for node in G.nodes():
+        list.append(node.Index)
+    return list
+
+def distribute(G_bueno, requiredBikes, requiredDocks):
+    url_status = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status'
+    bikes = pd.DataFrame.from_records(pd.read_json(url_status)['data']['stations'], index='station_id')
+    G = nx.DiGraph()
+    G.add_node('TOP') # The green node
+    demand = 0
+    for st in bikes.itertuples():
+        idx = st.Index
+        if idx not in index_in_a_list(G_bueno):
+            continue
+        stridx = str(idx)
+        # The blue (a), black (n) and red (r) nodes of the graph
+        a_idx, n_idx, r_idx = 'a'+stridx, 'n'+stridx, 'r'+stridx
+        G.add_node(n_idx)
+        G.add_node(a_idx)
+        G.add_node(r_idx)
+
+        b, d = st.num_bikes_available, st.num_docks_available
+        req_bikes = max(0, requiredBikes - b)
+        req_docks = max(0, requiredDocks - d)
+
+        G.add_edge('TOP', a_idx)
+        G.add_edge(r_idx, 'TOP')
+        G.add_edge(a_idx, n_idx)
+        G.add_edge(n_idx, r_idx)
+
+        if req_bikes > 0:
+            demand += req_bikes
+            G.nodes[r_idx]['demand'] = req_bikes
+            G.edges[a_idx,n_idx]['capacity'] = 0
+
+        elif req_docks > 0:
+            demand -= req_docks
+            G.nodes[a_idx]['demand'] = -req_docks
+            G.edges[n_idx,r_idx]['capacity'] = 0
+    G.nodes['TOP']['demand'] = -demand
+    #adds the edges from our graph to the directed one
+    for edge in G_bueno.edges():
+        node1 = edge[0]
+        node2 = edge[1]
+        id1 = node1.Index
+        id2 = node2.Index
+        peso = G_bueno[node1][node2]['weight']
+        G.add_edge('n'+str(id1), 'n'+str(id2), cost = int(1000*peso), weight = peso)
+        G.add_edge('n'+str(id2), 'n'+str(id1), cost = int(1000*peso), weight = peso)
+    err = False
+
+    try:
+        flowCost, flowDict = nx.network_simplex(G, weight = 'cost')
+
+    except nx.NetworkXUnfeasible:
+        err = True
+        return err, 1
+        '''
+        "No solution could be found"
+        '''
+    except:
+        err = True
+        return err, 2
+        '''
+        "***************************************"
+        "*** Fatal error: Incorrect graph model "
+        "***************************************"
+        '''
+    if not err:
+
+        total_km = 0
+        first = True
+        '''
+        Here we calculate the total cost in kilometers and the
+        maximum cost in km*bikes per edge.
+        '''
+        for src in flowDict:
+            if src[0] != 'n': continue
+            idx_src = int(src[1:])
+            for dst, b in flowDict[src].items():
+                if dst[0] == 'n' and b > 0:
+                    idx_dst = int(dst[1:])
+                    total_km += G.edges[src, dst]['weight']
+                    cost = (G.edges[src, dst]['weight'] * b, idx_src, idx_dst)
+                    if first:
+                        first = False
+                        Max_cost = cost
+                    elif cost[0] > Max_cost[0]:
+                        Max_cost = cost
+                    print(Max_cost[0])
+        return total_km, Max_cost, err
 
 def time_complete(t):
     h = int(t)
