@@ -23,7 +23,7 @@ of the quadrant where a certain point is and the dimensions of the matrix,
 this algorithm returns the quadrants which may contain points that are suitable
 to make new conections with the point we are analizing.
 '''
-def Possible_quadrants(M, i, j, rows ,columns):
+def Possible_quadrants(M, i, j, rows, columns):
     pos = [(M[i][j])]
     if i + 1 < rows:
         pos.append(M[i + 1][j])
@@ -137,6 +137,7 @@ def Graph(dist=1000):
 
 ''' ********************************************************************************************************'''
 
+
 '''
 Given The graph "G" and a filename, creates an image of the graph on top of
 the map of Barcelona and saves it with the given filename in the current
@@ -146,11 +147,11 @@ def Plotgraph(G, filename):
     m_bcn = stm.StaticMap(1000, 1000)
 
     for node in G.nodes:
-        marker = stm.CircleMarker((node.lon, node.lat) , 'red', 3) #esto es el tamaño del punto
+        marker = stm.CircleMarker((node.lon, node.lat), 'red', 3)
         m_bcn.add_marker(marker)
 
     for edge in G.edges:
-        line = stm.Line(((edge[0].lon, edge[0].lat),(edge[1].lon, edge[1].lat)), 'blue', 1)
+        line = stm.Line(((edge[0].lon, edge[0].lat), (edge[1].lon, edge[1].lat)), 'blue', 1)
         m_bcn.add_line(line)
 
     image = m_bcn.render()
@@ -162,7 +163,8 @@ Puts all the indexes from the Nodes in the graph G in a list.
 '''
 def index_in_a_list(G):
     list = []
-    for node in G.nodes(): list.append(node.Index)
+    for node in G.nodes():
+        list.append(node.Index)
     return list
 
 
@@ -199,27 +201,27 @@ def create_model(G, bidirected_G, bikes, requiredBikes, requiredDocks):
         if req_bikes > 0:
             demand += req_bikes
             G.nodes[r_idx]['demand'] = req_bikes
-            G.edges[a_idx,n_idx]['capacity'] = 0
+            G.edges[a_idx, n_idx]['capacity'] = 0
 
         elif req_docks > 0:
             demand -= req_docks
             G.nodes[a_idx]['demand'] = -req_docks
-            G.edges[n_idx,r_idx]['capacity'] = 0
+            G.edges[n_idx, r_idx]['capacity'] = 0
     G.nodes['TOP']['demand'] = -demand
 
 
 '''
 Adds the edges from our graph to the directed one.
 '''
-def add_edges_to_from(G,bidirected_G):
+def add_edges_to_from(G, bidirected_G):
     for edge in bidirected_G.edges():
         node1 = edge[0]
         node2 = edge[1]
         id1 = node1.Index
         id2 = node2.Index
         peso = bidirected_G[node1][node2]['weight']
-        G.add_edge('n'+str(id1), 'n'+str(id2), cost = int(1000*peso), weight = peso)
-        G.add_edge('n'+str(id2), 'n'+str(id1), cost = int(1000*peso), weight = peso)
+        G.add_edge('n'+str(id1), 'n'+str(id2), cost=int(1000*peso), weight=peso)
+        G.add_edge('n'+str(id2), 'n'+str(id1), cost=int(1000*peso), weight=peso)
 
 
 '''
@@ -236,7 +238,8 @@ def max_and_total_cost(G, flowDict):
     total_km = 0
     first = True
     for src in flowDict:
-        if src[0] != 'n': continue
+        if src[0] != 'n':
+            continue
         idx_src = int(src[1:])
         for dst, b in flowDict[src].items():
             if dst[0] == 'n' and b > 0:
@@ -264,7 +267,7 @@ def distribute(bidirected_G, requiredBikes, requiredDocks):
     add_edges_to_from(G, bidirected_G)
     err = False
     try:
-        flowCost, flowDict = nx.network_simplex(G, weight = 'cost')
+        flowCost, flowDict = nx.network_simplex(G, weight='cost')
 
     except nx.NetworkXUnfeasible:
         err = True
@@ -339,14 +342,14 @@ def Plotpath_and_calculate_time(G, Path, filename):
             distance = haversine((node1.lat, node1.lon), (node2.lat, node2.lon))
             if G[node1][node2]['weight'] == distance:
                 time += distance / 10
-                line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'blue', 2)
+                line = stm.Line(((node1.lon, node1.lat), (node2.lon, node2.lat)), 'blue', 2)
             else:
                 time += distance / 4
-                line = stm.Line(((node1.lon, node1.lat),(node2.lon, node2.lat)), 'orange', 2)
+                line = stm.Line(((node1.lon, node1.lat), (node2.lon, node2.lat)), 'orange', 2)
 
-            marker1 = stm.CircleMarker((node1.lon, node1.lat) , color, 5)
+            marker1 = stm.CircleMarker((node1.lon, node1.lat), color, 5)
             color = 'red'
-            marker2 = stm.CircleMarker((node2.lon, node2.lat) , color, 5)
+            marker2 = stm.CircleMarker((node2.lon, node2.lat), color, 5)
             m_bcn.add_marker(marker1)
             m_bcn.add_marker(marker2)
             m_bcn.add_line(line)
@@ -363,14 +366,14 @@ Returns the estimated time to do the route and creates a picture of the path
 with the given filename.
 '''
 def Route2(G, coord1, coord2, filename):
-    start = Pandas(lat = coord1[0] , lon = coord1[1])
-    finish = Pandas(lat = coord2[0] , lon = coord2[1])
+    start = Pandas(lat=coord1[0], lon=coord1[1])
+    finish = Pandas(lat=coord2[0], lon=coord2[1])
     G.add_nodes_from([start, finish])
     Gc = nx.complement(G)
     G.remove_nodes_from([start, finish])
     for edge in Gc.edges:
         distance = haversine((edge[0].lat, edge[0].lon), (edge[1].lat, edge[1].lon))
-        Gc.add_edge(edge[0], edge[1], weight = 10/4 * distance)
+        Gc.add_edge(edge[0], edge[1], weight=10/4 * distance)
 
     Gc = nx.compose(G, Gc)
     Shortest_Path = nx.dijkstra_path(Gc, start, finish)
@@ -386,15 +389,17 @@ Returns the estimated time to do the route and creates a picture of the path
 with the given filename.
 '''
 def Route1(G, coord1, coord2, filename):
-    start = Pandas(lat = coord1[0] , lon = coord1[1])
-    finish = Pandas(lat = coord2[0] , lon = coord2[1])
+    start = Pandas(lat=coord1[0], lon=coord1[1])
+    finish = Pandas(lat=coord2[0], lon=coord2[1])
     max_dist = haversine((start.lat, start.lon), (finish.lat, finish.lon))
     G.add_nodes_from([start, finish])
     for node in G.nodes:
         distance1 = haversine((start.lat, start.lon), (node.lat, node.lon))
         distance2 = haversine((finish.lat, finish.lon), (node.lat, node.lon))
-        if node != start and distance1 <= max_dist: G.add_edge(start, node, weight = 10/4 * distance1)
-        if node != finish and distance2 <= max_dist: G.add_edge(finish, node, weight = 10/4 * distance2)
+        if node != start and distance1 <= max_dist:
+            G.add_edge(start, node, weight=10/4 * distance1)
+        if node != finish and distance2 <= max_dist:
+            G.add_edge(finish, node, weight=10/4 * distance2)
     Shortest_Path = nx.dijkstra_path(G, start, finish)
     G.remove_nodes_from([start, finish])
     return Plotpath_and_calculate_time(G, Shortest_Path, filename)
@@ -425,8 +430,8 @@ a filename, creates an image with those points and a line between them.
 def Plotgraph_graph_to_nearest(n_station, coord, filename):
     m_bcn = stm.StaticMap(1000, 1000)
     line = stm.Line(((coord[1], coord[0]), (n_station.lon, n_station.lat)), 'orange', 2)
-    marker1 = stm.CircleMarker((coord[1], coord[0]) , 'green', 5) #esto es el tamaño del punto
-    marker2 = stm.CircleMarker((n_station.lon, n_station.lat) , 'red', 5) #esto es el tamaño del punto
+    marker1 = stm.CircleMarker((coord[1], coord[0]), 'green', 5)
+    marker2 = stm.CircleMarker((n_station.lon, n_station.lat), 'red', 5)
     m_bcn.add_marker(marker1)
     m_bcn.add_marker(marker2)
     m_bcn.add_line(line)
@@ -439,7 +444,7 @@ Returns the adress of the nearest station to the coordinates of the user and the
 expected time to go there by foot.
 '''
 def Nearest_station(G, coord, filename):
-    n_station = Find_nearest_station(G, coord);
+    n_station = Find_nearest_station(G, coord)
     Plotgraph_graph_to_nearest(n_station, coord, filename)
     time = time_complete(haversine((coord[0], coord[1]), (n_station.lat, n_station.lon)) / 4)
     return n_station.address, time
