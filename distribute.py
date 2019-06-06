@@ -106,20 +106,17 @@ def index_in_a_list(G):
         list.append(node.Index)
     return list
 
-def distribute(G_bueno, requiredBikes, requiredDocks):
-    print("hola")
+def distribute(G_original, requiredBikes, requiredDocks):
     url_status = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status'
     bikes = pd.DataFrame.from_records(pd.read_json(url_status)['data']['stations'], index='station_id')
     G = nx.DiGraph()
-    G.add_node('TOP') # The green node
+    G.add_node('TOP')
     demand = 0
     estaciones_malas = []
     for st in bikes.itertuples():
         idx = st.Index
-        if idx not in index_in_a_list(G_bueno):
-            estaciones_malas.append(idx)
-            print("que esta pachando?")
-            continue
+        if idx not in index_in_a_list(G_original):
+            estaciones_malas.append(idx)                   # Justo aqui abajo habia un continue
         stridx = str(idx)
         # The blue (a), black (n) and red (r) nodes of the graph
         a_idx, n_idx, r_idx = 'a'+stridx, 'n'+stridx, 'r'+stridx
@@ -149,12 +146,12 @@ def distribute(G_bueno, requiredBikes, requiredDocks):
     G.nodes['TOP']['demand'] = -demand
     print(-demand)
     #adds the edges from our graph to the directed one
-    for edge in G_bueno.edges():
+    for edge in G_original.edges():
         node1 = edge[0]
         node2 = edge[1]
         id1 = node1.Index
         id2 = node2.Index
-        peso = G_bueno[node1][node2]['weight']
+        peso = G_original[node1][node2]['weight']
         G.add_edge('n'+str(id1), 'n'+str(id2), cost = int(1000*peso), weight = peso)
         G.add_edge('n'+str(id2), 'n'+str(id1), cost = int(1000*peso), weight = peso)
     print("nodes added succesfuly")
@@ -195,14 +192,14 @@ def distribute(G_bueno, requiredBikes, requiredDocks):
 
 def main():
     dist = read(int)
-    G_bueno = Graph(dist)
+    G_original = Graph(dist)
     print("ok")
     x, y = read(int, int)
-    distribute(G_bueno, x, y)
+    distribute(G_original, x, y)
     '''
-    G_bueno = Grapho_cortadella()
+    G_original = Grapho_cortadella()
     print("ok")
     x, y = read(int, int)
-    distribute_cortadella(G_bueno, x, y)
+    distribute_cortadella(G_original, x, y)
     '''
 main()

@@ -11,14 +11,17 @@ Pandas = cl.namedtuple('Pandas', 'lat lon')
 
 ''' ********************************************** Graph creation ********************************************** '''
 
-def Possible_quadrants(M, i, j, verticales ,horizontales):
+
+def Possible_quadrants(M, i, j, verticales, horizontales):
     pos = [(M[i][j])]
     if i + 1 < verticales:
         pos.append(M[i + 1][j])
-        if j + 1 < horizontales: pos.append(M[i + 1][j + 1])
+        if j + 1 < horizontales:
+            pos.append(M[i + 1][j + 1])
     if j + 1 < horizontales:
         pos.append(M[i][j+1])
-        if i - 1 >= 0: pos.append(M[i - 1][j + 1])
+        if i - 1 >= 0:
+            pos.append(M[i - 1][j + 1])
     return pos
 
 
@@ -33,8 +36,10 @@ def Create_linear_Graph(M, dist):
                 for quadrant in Possible_quadrants(M, i, j, verticales, horizontales):
                     for point2 in quadrant:
                         distance = haversine((point.lat, point.lon), (point2.lat, point2.lon))
-                        if distance <= dist and point != point2: G.add_edge(point, point2, weight = distance)
+                        if distance <= dist and point != point2:
+                            G.add_edge(point, point2, weight=distance)
     return G
+
 
 def Bbox_dimensions(bicing, dist):
     first = True
@@ -44,10 +49,14 @@ def Bbox_dimensions(bicing, dist):
             lon_min = lon_max = st.lon
             first = False
         else:
-            if st.lat < lat_min: lat_min = st.lat
-            elif st.lat > lat_max: lat_max = st.lat
-            if st.lon < lon_min: lon_min = st.lon
-            elif st.lon > lon_max: lon_max = st.lon
+            if st.lat < lat_min:
+                lat_min = st.lat
+            elif st.lat > lat_max:
+                lat_max = st.lat
+            if st.lon < lon_min:
+                lon_min = st.lon
+            elif st.lon > lon_max:
+                lon_max = st.lon
     sizex = int(haversine((lat_min, lon_min), (lat_max, lon_min)) // dist + 1)
     sizey = int(haversine((lat_min, lon_min), (lat_min, lon_max)) // dist + 1)
     return sizex, sizey, lat_min, lon_min
@@ -56,11 +65,12 @@ def Bbox_dimensions(bicing, dist):
 def Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min):
     matrix = [[list() for j in range(sizey)] for i in range(sizex)]
     for st in bicing.itertuples():
-        dpx = int(haversine((lat_min, st.lon),(st.lat,st.lon)) // dist)
-        dpy = int(haversine((st.lat, lon_min),(st.lat,st.lon)) // dist)
+        dpx = int(haversine((lat_min, st.lon), (st.lat, st.lon)) // dist)
+        dpy = int(haversine((st.lat, lon_min), (st.lat, st.lon)) // dist)
         matrix[dpx][dpy].append(st)
 
     return matrix
+
 
 def Create_by_sort_Graph(bicing, dist):
     G = nx.Graph()
@@ -70,22 +80,23 @@ def Create_by_sort_Graph(bicing, dist):
         j = i + 1
         while(j < len(v) and v[j].lat - v[i].lat <= dist):
             distance = haversine((v[i].lat, v[i].lon), (v[j].lat, v[j].lon))
-            if distance <= dist: G.add_edge(v[i] , v[j], weight = distance)
+            if distance <= dist:
+                G.add_edge(v[i], v[j], weight=distance)
             j += 1
     return G
 
 
-def Graph(dist = 1000):
+def Graph(dist=1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index = 'station_id')
-    if dist == 0: return Short_distance_Graph(bicing, dist)
+    bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index='station_id')
+    if dist == 0:
+        return Short_distance_Graph(bicing, dist)
     dist /= 1000
     sizex, sizey, lat_min, lon_min = Bbox_dimensions(bicing, dist)
-    print(sizex*sizey)
-    if sizex*sizey > 661500 or sizex*sizey < 7: return Create_by_sort_Graph(bicing, dist)
-    else:
-        M = Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min)
-        return Create_linear_Graph(M, dist)
+    if sizex*sizey > 661500 or sizex*sizey < 7:
+        return Create_by_sort_Graph(bicing, dist)
+    M = Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min)
+    return Create_linear_Graph(M, dist)
 
 ''' ******************************************************************************************************** '''
 
@@ -106,8 +117,7 @@ def Plotgraph(G, filename):
 #Puts all the indexes from the Nodes in the graph G in a list
 def index_in_a_list(G):
     list = []
-    for node in G.nodes():
-        list.append(node.Index)
+    for node in G.nodes(): list.append(node.Index)
     return list
 
 def distribute(G_bueno, requiredBikes, requiredDocks):
