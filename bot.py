@@ -221,12 +221,10 @@ between stations in the graph so that these requirements are guaranteed.
 '''
 def distribute(bot, update, args, user_data):
     argerror = False
-    if len(args) != 2:
-        argerror = True
-    elif int(args[0]) < 0 or int(args[1]) < 0:
+    if len(args) != 2 or int(args[0]) < 0 or int(args[1]) < 0 or (int(args[0]) == 0 and int(args[1]) == 0):
         argerror = True
     if argerror:
-        bot.send_message(chat_id=update.message.chat_id, text="You have to introduce 2 positive numbers next to the command:\nThe number of bikes and the number of docks")
+        bot.send_message(chat_id=update.message.chat_id, text="You have to introduce 2 positive numbers next to the command:\nThe number of bikes and the number of docks\nMorover, one of them must be greater than 0")
     else:
         requiredBikes = int(args[0])
         requiredDocks = int(args[1])

@@ -123,6 +123,9 @@ def Create_by_sort_Graph(bicing, dist):
     return G
 
 
+'''
+At this
+'''
 def Graph(dist=1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
     bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index='station_id')
@@ -401,8 +404,9 @@ def Route1(G, coord1, coord2, filename):
         if node != finish and distance2 <= max_dist:
             G.add_edge(finish, node, weight=10/4 * distance2)
     Shortest_Path = nx.dijkstra_path(G, start, finish)
+    time = Plotpath_and_calculate_time(G, Shortest_Path, filename)
     G.remove_nodes_from([start, finish])
-    return Plotpath_and_calculate_time(G, Shortest_Path, filename)
+    return time
 
 
 '''
