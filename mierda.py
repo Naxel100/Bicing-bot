@@ -85,11 +85,11 @@ def Graph_supremo_nivel_9000(dist = 1000):
     if dist == 0: return Graph_supuestamente_rapido(dist)
     dist /= 1000
     sizex, sizey, lat_min, lon_min = Calcula_dimensiones(bicing, dist)
-    #casillas = sizex*sizey
-    #if casillas > 160000:
-    #    return Graph_supuestamente_rapido(bicing, dist)
-    #else:
-    #    print("casillas:",casillas, "con dist:", dist)
+    casillas = sizex*sizey
+    if casillas > 160000:
+        return Graph_supuestamente_rapido(bicing, dist)
+    else:
+        print("casillas:",casillas, "con dist:", dist)
     return Graph_supuestamente_aun_mas_rapidito(bicing, dist, sizex, sizey, lat_min, lon_min)
 
 def crear_aristas(G, bicing, M, dist):

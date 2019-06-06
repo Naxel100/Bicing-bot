@@ -41,15 +41,15 @@ It shows the authors of the project.
 
 ### /nodes
 
-Prints the node's graph number. 
+Prints the node's graph number.
 
 ### /edges
 
-Prints the edges' graph number. 
+Prints the edges' graph number.
 
 ### /components
 
-Prints the connected components' graph number. 
+Prints the connected components' graph number.
 
 ### /nearest\_station
 
@@ -65,7 +65,8 @@ As I've told before, the **/help** command sends an message with a summary of th
 
 ### /distribute '_number of bicycles_' '_number of empty docks_'
 
-Given a and b parameters, this command tries to guarantee a bicycles and b empty docks at each bicing station and estimates the cost of transporting bicycles to compensate unbalanced distributions
+Given 'a' and 'b' parameters, this command tries to guarantee 'a' bicycles and 'b' empty docks at each bicing station by moving bikes from the stations with a excess of bikes to the ones with a lack of them.
+To do the calculations, we use the network_simplex algorithm from the Pandas python library.
 
 
 Furthermore, the bot handles some other situations like unknown commands.
@@ -78,7 +79,7 @@ In order to maximize efficiency the graph uses two different algorithms dependin
 
 ### Algorithm 1
 
-The first algorihtm is used for medium distances (most of them) and creates a matrix in which bicing stations are classified and then, box by box creates the edges to a bicing station st comparing the distance of the stations in the same box an four neighbour boxes to st and adding the edges between st and those stations nearer to st than the given distance. 
+The first algorihtm is used for medium distances (most of them) and creates a matrix in which bicing stations are classified and then, box by box creates the edges to a bicing station st comparing the distance of the stations in the same box an four neighbour boxes to st and adding the edges between st and those stations nearer to st than the given distance.
 
 One may tink that accessing to all the positions of the matrix when comparating may be slow but, when comparating times we realized that there was no real difference and accessing station by station was most of times slower actually.
 
@@ -93,7 +94,7 @@ You can observe the efficiency of both algorithm here below:
 
 * **Red** - *Algorithm1* - accesing all the matrix boxes
 * **Green** - *Algorihtm1* - avoiding empty matrix boxes
-* **Blue** - *Algorithm2* - 
+* **Blue** - *Algorithm2* -
 
 **Little distances:**
 
