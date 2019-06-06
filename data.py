@@ -124,7 +124,10 @@ def Create_by_sort_Graph(bicing, dist):
 
 
 '''
-At this
+At this point, we calculate the theorical number of quadrants the map of
+Barcelona will be divided in and if it is too big (bigger than 661500) or too
+small (smaller than 7), we execute the Create_by_sort_Graph algorithm. If not,
+we do the one that takes linear time on the number of edges.
 '''
 def Graph(dist=1000):
     url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
@@ -228,7 +231,7 @@ def add_edges_to_from(G, bidirected_G):
 
 
 '''
-Given the dictionary of dictionarys flowDict, returned by nx.network_simplex
+Given the dictionary of dictionaries flowDict, returned by nx.network_simplex
 and the directed graph G. Here we calculate and return the steps needed to guarantee the conditions,
 the total cost in kilometers and the maximum cost in km*bikes per edge.
 The maximum cost is represented by a tuple with the following format:
