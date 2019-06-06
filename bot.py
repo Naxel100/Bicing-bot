@@ -36,9 +36,12 @@ This command creates a graph of the given distance given.
 '''
 def graph(bot, update, args, user_data):
     if len(args) == 1:
-        G = d.Graph(int(args[0]))
-        user_data['graph'] = G
-        bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: %s" % args[0])
+        if int(args[0]) < 0:
+            bot.send_message(chat_id=update.message.chat_id, text="Please, enter a positive distance")
+        else:
+            G = d.Graph(int(args[0]))
+            user_data['graph'] = G
+            bot.send_message(chat_id=update.message.chat_id, text="Graph created with distance: %s" % args[0])
     elif len(args) == 0:  # if no distance is provided, it creates a graph with distance 1000.
         G = d.Graph()
         user_data['graph'] = G
@@ -157,7 +160,7 @@ def addressesTOcoordinates(addresses, update, bot, user_data):
 As both options route must use the same code this is a unitary code for
 both them: fastest_route and route. It sends an image of the route. A green
 point indicates the start point, in blue color the paths the user must cycle
-and in orange color the paths in which user's must walk. Morever, it prints
+and in orange color the paths in which user's must walk. Moreover, it prints
 the journey's estimated time.
 '''
 def do_route(option, bot, update, args, user_data):
