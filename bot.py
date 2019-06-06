@@ -15,7 +15,7 @@ def start(bot, update, user_data):
     G = d.Graph()
     user_data['graph'] = G
     username = update.message.chat.first_name
-    bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nMy mission is to help you to move throughout Barcelona by bicing. Remember, if you're lost just ask for   /help.😄😄\n" % username)
+    bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nMy mission is to help you to move throughout Barcelona by bicing. Remember, if you're lost just ask for -> /help.😄😄\n" % username)
 
 
 '''
@@ -128,11 +128,10 @@ def from_ubi_to_destination(address, update, bot, user_data):
         coord = user_data['coords']
     except:  # if user location is not stored ask for it
         bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that your current location is not available. Send it to me and try it again")
-    try:
-        location1 = geolocator.geocode(address + ', Barcelona')
-    except:
+    location1 = geolocator.geocode(address + ', Barcelona')
+    if location1 == None:
         bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that the direction given doesn't exist. Please try it again.")
-    return (location1.latitude, location1.longitude), coord
+    return coord, (location1.latitude, location1.longitude)
 
 
 '''
