@@ -11,6 +11,7 @@ from jutge import read, read_line
 url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
 bicing = pd.DataFrame.from_records(pd.read_json(url)['data']['stations'], index='station_id')
 
+
 def Sorting_algorithm(dist=1000):
     G = nx.Graph()
     v = sorted(list(bicing.itertuples()), key=lambda station: station.lat)
@@ -23,6 +24,7 @@ def Sorting_algorithm(dist=1000):
                 G.add_edge(v[i], v[j], weight = distance)
             j += 1
     return G
+
 
 def Create_Matrix(bicing, dist, sizex, sizey, lat_min, lon_min):
     matrix = [[list() for j in range(sizey)] for i in range(sizex)]
