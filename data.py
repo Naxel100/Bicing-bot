@@ -1,4 +1,3 @@
-import pep8
 import pandas as pd
 import networkx as nx
 import staticmap as stm
@@ -27,9 +26,9 @@ def Possible_quadrants(M, i, j, rows, columns):
     pos = [(M[i][j])]
     if i + 1 < rows:
         pos.append(M[i + 1][j])
-        if j + 1 < horizontales:
+        if j + 1 < columns:
             pos.append(M[i + 1][j + 1])
-    if j + 1 < horizontales:
+    if j + 1 < columns:
         pos.append(M[i][j+1])
         if i - 1 >= 0:
             pos.append(M[i - 1][j + 1])
@@ -98,6 +97,7 @@ def Create_matrix(bicing, dist, sizex, sizey, lat_min, lon_min):
         matrix[dpx][dpy].append(st)
 
     return matrix
+
 
 '''
 Given the DataFrame containing the stations, the distance that defines the graph,

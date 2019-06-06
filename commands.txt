@@ -9,3 +9,4 @@ edges - Prints the number of edges in the graph
 nodes - Prints the number of nodes in the graph
 components - Number of connected components
 plotgraph - Sends a picture of the actual graph
+start - init the bot and create a 1km graph

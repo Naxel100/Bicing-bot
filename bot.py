@@ -12,14 +12,16 @@ The start function is the firt command the user must call when
 using the bot. It creates a graph with size 1km and welcomes the user.
 '''
 def start(bot, update, user_data):
+    print("hooe")
     G = d.Graph()
+    print("hooerrrr")
     user_data['graph'] = G
     username = update.message.chat.first_name
     bot.send_message(chat_id=update.message.chat_id, text="Hi, %s.\nMy mission is to help you to move throughout Barcelona by bicing. Remember, if you're lost just ask for   /help.😄😄\n" % username)
 
 
 '''
-Prints the name of the author o this code.
+Prints the name of the author of this code.
 '''
 def authors(bot, update):
     message = "Made by: \n" \
