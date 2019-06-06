@@ -6,12 +6,15 @@ This bot is a part of a university project included in the Bachelor in data scie
 
 ## Getting started
 
-Once you have installed and unzip the folder you must install all the packages contained in the requirements.txt. In order to execute the file just write in the console:
+Once you have installed and unzip the folder you must install all the packages contained in the requirements.txt. In order to install all the requirements just write in the console:
 
 ```bash
 pip install -r requirements.txt
 ```
-
+Then to run the bot execute the program:
+```bash
+python3 bot.py
+```
 
 ## Functionalities
 

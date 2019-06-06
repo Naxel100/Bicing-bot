@@ -11,10 +11,7 @@ import collections as cl
 from jutge import read, read_line
 
 url_info = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-url_status = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status'
 stations = pd.DataFrame.from_records(pd.read_json(url_info)['data']['stations'], index='station_id')
-bikes = pd.DataFrame.from_records(pd.read_json(url_status)['data']['stations'], index='station_id')
-
 
 def Possible_quadrants(M, i, j, verticales ,horizontales):
     pos = [(M[i][j])]
@@ -162,13 +159,13 @@ def distribute(G_original, requiredBikes, requiredDocks):
 
     except nx.NetworkXUnfeasible:
         err = True
-        return err, 1
+        return 1, "malo", err
         '''
         "No solution could be found"
         '''
     except:
         err = True
-        return err, 2
+        return 2, "malisimo", err
         '''
         "***************************************"
         "*** Fatal error: Incorrect graph model "
