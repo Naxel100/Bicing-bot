@@ -196,26 +196,33 @@ to that station.
 '''
 def nearest_station(bot, update, user_data, args):
     geolocator = Nominatim(user_agent="bicing_bot")
-    try:
-        address = args_in_a_line(args)
-        location = geolocator.geocode(address + ', Barcelona')
-        coord = (location.latitude, location.longitude)
-    except:
+    err = False
+    if len(args) != 0:
+        try:
+            address = args_in_a_line(args)
+            location = geolocator.geocode(address + ', Barcelona')
+            coord = (location.latitude, location.longitude)
+        except:
+            bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that the direction given doesn't exist. Please try it again.")
+            err = True
+    else:
         try:
             coord = user_data['coords']
         except:
             bot.send_message(chat_id=update.message.chat_id, text="💣💣💣 Ups! It seems that your current location is not available. Send it to me and try it again")
-    message_load = bot.send_message(chat_id=update.message.chat_id, text="Processing...🕗🕘🕙")
-    id = str(update.message.chat_id)
-    filename = 'nearest_station' + '_' + id + '.png'
-    n_station, time = d.Nearest_station(user_data['graph'], coord, filename)
-    bot.send_message(chat_id=update.message.chat_id, text=n_station)
-    id = str(update.message.chat_id)
-    bot.send_photo(chat_id=update.message.chat_id, photo=open(filename, 'rb'))
-    bot.delete_message(message_load.chat_id, message_load.message_id)
-    os.remove(filename)
-    time = output_time(time)
-    bot.send_message(chat_id=update.message.chat_id, text=time)
+            err = True
+    if not err:
+        message_load = bot.send_message(chat_id=update.message.chat_id, text="Processing...🕗🕘🕙")
+        id = str(update.message.chat_id)
+        filename = 'nearest_station' + '_' + id + '.png'
+        n_station, time = d.Nearest_station(user_data['graph'], coord, filename)
+        bot.send_message(chat_id=update.message.chat_id, text=n_station)
+        id = str(update.message.chat_id)
+        bot.send_photo(chat_id=update.message.chat_id, photo=open(filename, 'rb'))
+        bot.delete_message(message_load.chat_id, message_load.message_id)
+        os.remove(filename)
+        time = output_time(time)
+        bot.send_message(chat_id=update.message.chat_id, text=time)
 
 '''
 Given the current graph we are working with and the number of required bikes and
