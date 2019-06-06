@@ -126,12 +126,18 @@ def read_input():
 
 def main():
     inicio, fin, incremento = read_input()
-    vx = v1 = v2 = v3 = []
+    vx = []
+    v1 = []
+    v2 = []
+    v3 = []
     for i in range(inicio, fin, incremento):
         vx.append(i)
 
     for x in range(inicio, fin, incremento):
-        c = r = sr = cont = 0
+        c = 0
+        r = 0
+        sr = 0
+        cont = 0
         cont += 1
 
         start1 = time.time()
@@ -157,9 +163,10 @@ def main():
         v2.append(r / cont)
         v3.append(sr / cont)
 
+    print(v1)
     plt.plot(vx, v1, 'ro')
     plt.plot(vx, v2, 'bs')
     plt.plot(vx, v3, 'g^')
-    plt.axis([inicio, fin, 0, 1])
+    plt.axis([inicio, fin, 0, 2])
     plt.show()
 main()
