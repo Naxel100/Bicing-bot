@@ -257,6 +257,7 @@ def max_and_total_cost(G, flowDict):
                 steps.append((b, idx_src, idx_dst))
     return steps, total_km, Max_cost
 
+
 '''
 Given the current graph we are working with and the number of required bikes and
 docks for each station, this algorithm calculates the mimimum cost flow of bikes

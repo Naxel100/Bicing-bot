@@ -163,7 +163,6 @@ def main():
         v2.append(r / cont)
         v3.append(sr / cont)
 
-    print(v1)
     plt.plot(vx, v1, 'ro')
     plt.plot(vx, v2, 'bs')
     plt.plot(vx, v3, 'g^')
