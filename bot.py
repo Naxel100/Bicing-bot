@@ -157,15 +157,18 @@ def distribute(bot, update, args, user_data):
         of the distribution (1 means that it's imposible to guarantee those
         conditions and 2 means that a fatal error ocurred, which is
         a really bad thing).
+        The list steps is a list containing how many bikes should be moved,
+        the source and destination stations, but it is not used because of
+        the problems with the output.
         '''
-        flowCost, biggest_cost, error= d.distribute(user_data['graph'], requiredBikes, requiredDocks)
-        if error and flowCost == 1:
+        steps, total_cost, biggest_cost, error= d.distribute(user_data['graph'], requiredBikes, requiredDocks)
+        if error and total_cost == 1:
             bot.send_message(chat_id=update.message.chat_id, text = "There's no possible solution for this conditions")
-        elif error and flowCost == 2:
+        elif error and total_cost == 2:
             bot.send_message(chat_id=update.message.chat_id, text = "💣💣💣 Fatal Error: Incorrect graph model! 💣💣💣")
         else:
             message = "The total cost of transferring bikes is:\n" + \
-                       str(int((flowCost*1000))/1000) + " km.\n" \
+                       str((int(total_cost*1000))/1000) + " km.\n" \
                       "The biggest cost move is:\n" + \
                        str(int((biggest_cost[0]*1000))/1000)+ " km*bikes, between stations " + str(biggest_cost[1]) + " and " + str(biggest_cost[2])
             bot.send_message(chat_id=update.message.chat_id, text = message)
