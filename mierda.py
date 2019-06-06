@@ -132,26 +132,25 @@ def main():
 
     for x in range(inicio, fin, incremento):
         c = r = sr = cont = 0
-        for y in range(1):
-            cont += 1
+        cont += 1
 
-            start1 = time.time()
-            G = Quadratic_graph(x)
-            finish1 = time.time()
-            c += finish1 - start1
-            print("Quadratic done")
+        start1 = time.time()
+        G = Quadratic_graph(x)
+        finish1 = time.time()
+        c += finish1 - start1
+        print("Quadratic done")
 
-            start2 = time.time()
-            Gp = Sorting_algorithm(x)
-            finish2 = time.time()
-            r += finish2 - start2
-            print("Medium speed done")
+        start2 = time.time()
+        Gp = Sorting_algorithm(x)
+        finish2 = time.time()
+        r += finish2 - start2
+        print("Medium speed done")
 
-            start3 = time.time()
-            Gq = Linear_Graph(x)
-            finish3 = time.time()
-            sr += finish3 - start3
-            print("Linear done")
+        start3 = time.time()
+        Gq = Linear_Graph(x)
+        finish3 = time.time()
+        sr += finish3 - start3
+        print("Linear done")
 
         print("This has been with distance ==", x)
         v1.append(c / cont)
